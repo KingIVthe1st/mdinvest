@@ -1,0 +1,12 @@
+# Large video files
+assets/Video/
+*.mp4
+*.mov
+*.avi
+
+# System files
+.DS_Store
+*/.DS_Store
+
+# Video files too large for GitHub
+# Note: Video files should be hosted separately (Vimeo, YouTube, etc.)
