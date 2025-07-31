@@ -1,8 +1,82 @@
 /* Stock Market Wolf Clone - Main JavaScript */
-/* Extracted core functionality from original 70 JS files */
+/* Performance-optimized version with requestAnimationFrame and consolidated observers */
 
 document.addEventListener('DOMContentLoaded', function() {
     
+    // Performance optimization utilities
+    const performanceUtils = {
+        rafId: null,
+        isScrolling: false,
+        
+        // Throttle function using requestAnimationFrame
+        rafThrottle(callback) {
+            if (this.rafId) return;
+            this.rafId = requestAnimationFrame(() => {
+                callback();
+                this.rafId = null;
+            });
+        },
+        
+        // Add will-change hints for better performance
+        addWillChange(element, properties = 'transform') {
+            element.style.willChange = properties;
+        },
+        
+        // Remove will-change hints when animation is done
+        removeWillChange(element) {
+            element.style.willChange = 'auto';
+        }
+    };
+
+    // Ripple effect object pool for better performance
+    const ripplePool = {
+        pool: [],
+        maxSize: 10,
+        
+        get() {
+            if (this.pool.length > 0) {
+                return this.pool.pop();
+            }
+            return document.createElement('span');
+        },
+        
+        release(ripple) {
+            if (this.pool.length < this.maxSize) {
+                // Clean up the ripple
+                ripple.className = '';
+                ripple.style.cssText = '';
+                ripple.remove();
+                this.pool.push(ripple);
+            }
+        }
+    };
+
+    // Consolidated intersection observer system
+    const observerManager = {
+        observers: new Map(),
+        
+        create(name, callback, options = {}) {
+            const defaultOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+            const mergedOptions = { ...defaultOptions, ...options };
+            
+            const observer = new IntersectionObserver(callback, mergedOptions);
+            this.observers.set(name, observer);
+            return observer;
+        },
+        
+        get(name) {
+            return this.observers.get(name);
+        },
+        
+        cleanup() {
+            this.observers.forEach(observer => observer.disconnect());
+            this.observers.clear();
+        }
+    };
+
     // Smooth scrolling for anchor links
     function initSmoothScrolling() {
         const links = document.querySelectorAll('a[href^="#"]');
@@ -23,21 +97,28 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Animate elements on scroll
+    // Optimized scroll animations with consolidated observer
     function initScrollAnimations() {
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
-        const observer = new IntersectionObserver(function(entries) {
+        const callback = function(entries) {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    entry.target.classList.add('animate-on-scroll');
-                    observer.unobserve(entry.target);
+                    if (!entry.target.classList.contains('animate-on-scroll')) {
+                        performanceUtils.addWillChange(entry.target);
+                        entry.target.classList.add('animate-on-scroll');
+                        
+                        // Remove will-change after animation completes
+                        setTimeout(() => {
+                            performanceUtils.removeWillChange(entry.target);
+                        }, 600);
+                    }
                 }
             });
-        }, observerOptions);
+        };
+
+        const observer = observerManager.create('scrollAnimations', callback, {
+            threshold: 0.15,
+            rootMargin: '0px 0px -100px 0px'
+        });
 
         // Observe all sections and cards
         const animatedElements = document.querySelectorAll(
@@ -45,18 +126,24 @@ document.addEventListener('DOMContentLoaded', function() {
         );
         
         animatedElements.forEach(el => {
+            // Ensure elements are visible by default
+            el.style.opacity = '1';
+            el.style.transform = 'translate3d(0, 0, 0)';
             observer.observe(el);
         });
     }
 
-    // Enhanced button interactions
+    // Optimized button interactions with ripple pooling
     function initButtonEffects() {
         const buttons = document.querySelectorAll('.cta-button, .pricing-button');
         
         buttons.forEach(button => {
-            // Add ripple effect on click
+            // Prepare button for ripple effects
+            button.style.position = 'relative';
+            button.style.overflow = 'hidden';
+            
             button.addEventListener('click', function(e) {
-                const ripple = document.createElement('span');
+                const ripple = ripplePool.get();
                 const rect = this.getBoundingClientRect();
                 const size = Math.max(rect.width, rect.height);
                 const x = e.clientX - rect.left - size / 2;
@@ -73,48 +160,60 @@ document.addEventListener('DOMContentLoaded', function() {
                     transform: scale(0);
                     animation: ripple 0.6s linear;
                     pointer-events: none;
+                    will-change: transform, opacity;
                 `;
                 
-                this.style.position = 'relative';
-                this.style.overflow = 'hidden';
                 this.appendChild(ripple);
                 
                 setTimeout(() => {
-                    ripple.remove();
+                    ripplePool.release(ripple);
                 }, 600);
             });
         });
     }
 
-    // Timeline animations
+    // Optimized timeline animations with consolidated observer
     function initTimelineAnimations() {
         const timelineItems = document.querySelectorAll('.timeline-item');
         
-        const timelineObserver = new IntersectionObserver(function(entries) {
+        const callback = function(entries) {
             entries.forEach((entry, index) => {
                 if (entry.isIntersecting) {
+                    performanceUtils.addWillChange(entry.target, 'transform, opacity');
+                    
+                    // Use requestAnimationFrame for smooth animations
+                    requestAnimationFrame(() => {
+                        setTimeout(() => {
+                            entry.target.style.opacity = '1';
+                            entry.target.style.transform = 'translate3d(0, 0, 0)';
+                        }, index * 100); // Reduced stagger for better performance
+                    });
+                    
+                    // Clean up after animation
                     setTimeout(() => {
-                        entry.target.style.opacity = '1';
-                        entry.target.style.transform = 'translateY(0)';
-                    }, index * 200);
-                    timelineObserver.unobserve(entry.target);
+                        performanceUtils.removeWillChange(entry.target);
+                        timelineObserver.unobserve(entry.target);
+                    }, (index * 100) + 600);
                 }
             });
-        }, { threshold: 0.3 });
+        };
+        
+        const timelineObserver = observerManager.create('timeline', callback, { threshold: 0.3 });
         
         timelineItems.forEach(item => {
             item.style.opacity = '0';
-            item.style.transform = 'translateY(50px)';
+            item.style.transform = 'translate3d(0, 50px, 0)';
             item.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
             timelineObserver.observe(item);
         });
     }
 
-    // Video enhancements
+    // Enhanced video functionality with cover image click interaction
     function initVideoEnhancements() {
         const videos = document.querySelectorAll('video');
         const videoWrappers = document.querySelectorAll('.video-wrapper');
         
+        // Initialize legacy video wrappers (existing functionality)
         videoWrappers.forEach(wrapper => {
             const video = wrapper.querySelector('video');
             const overlay = wrapper.querySelector('.video-overlay');
@@ -155,6 +254,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
+        // Initialize new video cover click functionality
+        initVideoCoverInteraction();
+        
         videos.forEach(video => {
             // Pause other videos when one starts playing
             video.addEventListener('play', function() {
@@ -179,50 +281,208 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Unlock card animations and interactions
+    // New video cover interaction functionality
+    function initVideoCoverInteraction() {
+        const videoCoverWrapper = document.querySelector('.video-cover-wrapper');
+        const videoPlayerWrapper = document.getElementById('video-player-wrapper');
+        const videoCoverImage = document.getElementById('video-cover-image');
+        const mainVideoPlayer = document.getElementById('main-video-player');
+        
+        if (!videoCoverWrapper || !videoPlayerWrapper || !videoCoverImage || !mainVideoPlayer) {
+            return;
+        }
+        
+        // Add ripple effect function
+        function createRippleEffect(e, element) {
+            const ripple = ripplePool.get();
+            const rect = element.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height) * 0.6;
+            const x = e.clientX - rect.left - size / 2;
+            const y = e.clientY - rect.top - size / 2;
+            
+            ripple.className = 'video-cover-ripple';
+            ripple.style.cssText = `
+                width: ${size}px;
+                height: ${size}px;
+                left: ${x}px;
+                top: ${y}px;
+            `;
+            
+            element.appendChild(ripple);
+            setTimeout(() => ripplePool.release(ripple), 600);
+        }
+        
+        // Video cover click handler with seamless positioning transition
+        videoCoverWrapper.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Prevent multiple clicks during animation
+            if (this.classList.contains('animating')) return;
+            
+            // Mark as animating
+            this.classList.add('animating');
+            const videoContainer = this.closest('.video-container');
+            if (videoContainer) videoContainer.classList.add('animating');
+            
+            // Create ripple effect
+            createRippleEffect(e, this);
+            
+            // Use requestAnimationFrame for smooth animations
+            performanceUtils.rafThrottle(() => {
+                // Add will-change hints for better performance
+                performanceUtils.addWillChange(videoCoverWrapper, 'opacity, transform');
+                performanceUtils.addWillChange(videoPlayerWrapper, 'opacity, transform');
+                
+                // Prepare video player for seamless transition
+                videoPlayerWrapper.style.display = 'block';
+                videoPlayerWrapper.style.opacity = '0';
+                videoPlayerWrapper.style.transform = 'translateY(0)';
+                
+                // Simultaneously fade out cover and fade in video for seamless transition
+                setTimeout(() => {
+                    // Hide cover image
+                    videoCoverWrapper.style.opacity = '0';
+                    videoCoverWrapper.style.transform = 'translateY(-10px)';
+                    
+                    // Show video player in exact same position
+                    videoPlayerWrapper.style.opacity = '1';
+                    videoPlayerWrapper.classList.add('show', 'animate-in');
+                    
+                    // Auto-play video immediately for seamless experience
+                    if (mainVideoPlayer.paused) {
+                        mainVideoPlayer.play().catch(error => {
+                            console.log('Auto-play prevented by browser:', error);
+                        });
+                    }
+                }, 50); // Very quick transition for seamless effect
+                
+                // Clean up will-change hints and animation states
+                setTimeout(() => {
+                    performanceUtils.removeWillChange(videoCoverWrapper);
+                    performanceUtils.removeWillChange(videoPlayerWrapper);
+                    videoCoverWrapper.classList.remove('animating');
+                    videoCoverWrapper.classList.add('hidden');
+                    if (videoContainer) videoContainer.classList.remove('animating');
+                }, 400);
+            });
+        });
+        
+        // Video event handlers for enhanced UX
+        mainVideoPlayer.addEventListener('play', function() {
+            // Ensure other videos are paused
+            const otherVideos = document.querySelectorAll('video:not(#main-video-player)');
+            otherVideos.forEach(video => {
+                if (!video.paused) {
+                    video.pause();
+                }
+            });
+        });
+        
+        mainVideoPlayer.addEventListener('ended', function() {
+            // Optional: Show cover image again when video ends
+            // Uncomment if you want this behavior
+            /*
+            performanceUtils.rafThrottle(() => {
+                videoPlayerWrapper.classList.remove('show', 'animate-in');
+                videoPlayerWrapper.style.display = 'none';
+                videoCoverWrapper.classList.remove('animate-out');
+            });
+            */
+        });
+        
+        // Error handling for video loading
+        mainVideoPlayer.addEventListener('error', function(e) {
+            console.error('Video loading error:', e);
+            // Could show fallback message or retry logic here
+        });
+        
+        // Loading state management
+        mainVideoPlayer.addEventListener('loadstart', function() {
+            this.style.filter = 'brightness(0.8)';
+        });
+        
+        mainVideoPlayer.addEventListener('canplay', function() {
+            this.style.filter = 'brightness(1)';
+        });
+        
+        // Keyboard accessibility
+        videoCoverWrapper.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                this.click();
+            }
+        });
+        
+        // Add ARIA attributes for accessibility
+        videoCoverWrapper.setAttribute('role', 'button');
+        videoCoverWrapper.setAttribute('aria-label', 'Play video');
+        videoCoverWrapper.setAttribute('tabindex', '0');
+    }
+
+    // Optimized unlock card animations with consolidated observer and pooled ripples
     function initUnlockCardEffects() {
         const unlockCards = document.querySelectorAll('.unlock-card');
         
-        // Scroll-based reveal animations
-        const unlockObserver = new IntersectionObserver(function(entries) {
+        if (unlockCards.length === 0) return;
+        
+        // Use consolidated observer system
+        const callback = function(entries) {
             entries.forEach((entry, index) => {
                 if (entry.isIntersecting) {
+                    performanceUtils.addWillChange(entry.target, 'transform, opacity');
+                    
+                    requestAnimationFrame(() => {
+                        setTimeout(() => {
+                            entry.target.style.opacity = '1';
+                            entry.target.style.transform = 'translate3d(0, 0, 0)';
+                            entry.target.classList.add('animate-on-scroll');
+                        }, index * 100); // Reduced stagger for smoother effect
+                    });
+                    
+                    // Clean up after animation
                     setTimeout(() => {
-                        entry.target.style.opacity = '1';
-                        entry.target.style.transform = 'translateY(0)';
-                        entry.target.classList.add('animate-on-scroll');
-                    }, index * 150); // Stagger the animations
-                    unlockObserver.unobserve(entry.target);
+                        performanceUtils.removeWillChange(entry.target);
+                        unlockObserver.unobserve(entry.target);
+                    }, (index * 100) + 800);
                 }
             });
-        }, { threshold: 0.2 });
+        };
+        
+        const unlockObserver = observerManager.create('unlockCards', callback, { threshold: 0.2 });
         
         unlockCards.forEach((card, index) => {
             // Initial state for animation
             card.style.opacity = '0';
-            card.style.transform = 'translateY(30px)';
+            card.style.transform = 'translate3d(0, 30px, 0)';
             card.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
             
             // Observe for scroll animation
             unlockObserver.observe(card);
             
-            // Enhanced hover effects for images
+            // Enhanced hover effects for images with hardware acceleration
             const placeholderImage = card.querySelector('.placeholder-image');
             if (placeholderImage) {
+                placeholderImage.style.transition = 'transform 0.3s ease, filter 0.3s ease';
+                
                 card.addEventListener('mouseenter', function() {
-                    placeholderImage.style.transform = 'scale(1.02)';
+                    performanceUtils.addWillChange(placeholderImage, 'transform, filter');
+                    placeholderImage.style.transform = 'scale3d(1.02, 1.02, 1)';
                     placeholderImage.style.filter = 'brightness(1.1)';
                 });
                 
                 card.addEventListener('mouseleave', function() {
-                    placeholderImage.style.transform = 'scale(1)';
+                    placeholderImage.style.transform = 'scale3d(1, 1, 1)';
                     placeholderImage.style.filter = 'brightness(1)';
+                    
+                    setTimeout(() => {
+                        performanceUtils.removeWillChange(placeholderImage);
+                    }, 300);
                 });
             }
             
-            // Add ripple effect on card click
+            // Optimized ripple effect with pooling
             card.addEventListener('click', function(e) {
-                const ripple = document.createElement('div');
+                const ripple = ripplePool.get();
                 const rect = this.getBoundingClientRect();
                 const size = Math.max(rect.width, rect.height) * 0.1;
                 const x = e.clientX - rect.left - size / 2;
@@ -240,10 +500,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     animation: cardRipple 0.8s ease-out;
                     pointer-events: none;
                     z-index: 10;
+                    will-change: transform, opacity;
                 `;
                 
                 this.appendChild(ripple);
-                setTimeout(() => ripple.remove(), 800);
+                setTimeout(() => ripplePool.release(ripple), 800);
             });
         });
     }
@@ -272,23 +533,32 @@ document.addEventListener('DOMContentLoaded', function() {
     `;
     document.head.appendChild(style);
 
-    // Pricing card interactions
+    // Optimized pricing card interactions with hardware acceleration
     function initPricingEffects() {
         const pricingCards = document.querySelectorAll('.pricing-card');
         
         pricingCards.forEach(card => {
+            // Prepare card for GPU acceleration
+            card.style.transition = 'transform 0.3s ease, box-shadow 0.3s ease';
+            
             card.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-10px) scale(1.02)';
+                performanceUtils.addWillChange(this, 'transform, box-shadow');
+                this.style.transform = 'translate3d(0, -10px, 0) scale(1.02)';
                 this.style.boxShadow = '0px 20px 60px rgba(0,0,0,0.5)';
             });
             
             card.addEventListener('mouseleave', function() {
                 if (this.classList.contains('featured')) {
-                    this.style.transform = 'translateY(-5px) scale(1.05)';
+                    this.style.transform = 'translate3d(0, -5px, 0) scale(1.05)';
                 } else {
-                    this.style.transform = 'translateY(0) scale(1)';
+                    this.style.transform = 'translate3d(0, 0, 0) scale(1)';
                 }
                 this.style.boxShadow = '0px 0px 30px rgba(0,0,0,0.3)';
+                
+                // Remove will-change after transition
+                setTimeout(() => {
+                    performanceUtils.removeWillChange(this);
+                }, 300);
             });
         });
     }
@@ -339,18 +609,40 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Add parallax effect to hero section
+    // Optimized parallax effect with requestAnimationFrame throttling
     function initParallaxEffect() {
         const hero = document.querySelector('.hero-section');
         
-        window.addEventListener('scroll', function() {
+        if (!hero) return;
+        
+        // Add will-change hint for better performance
+        performanceUtils.addWillChange(hero, 'transform');
+        
+        let ticking = false;
+        
+        function updateParallax() {
             const scrolled = window.pageYOffset;
             const rate = scrolled * -0.5;
             
-            if (hero) {
-                hero.style.transform = `translateY(${rate}px)`;
+            // Use transform3d for hardware acceleration
+            hero.style.transform = `translate3d(0, ${rate}px, 0)`;
+            ticking = false;
+        }
+        
+        function onScroll() {
+            if (!ticking) {
+                requestAnimationFrame(updateParallax);
+                ticking = true;
             }
-        });
+        }
+        
+        window.addEventListener('scroll', onScroll, { passive: true });
+        
+        // Store cleanup function for later use
+        window.parallaxCleanup = () => {
+            window.removeEventListener('scroll', onScroll);
+            performanceUtils.removeWillChange(hero);
+        };
     }
 
     // Initialize all functionality
@@ -366,8 +658,140 @@ document.addEventListener('DOMContentLoaded', function() {
         initLazyLoading();
         initParallaxEffect();
         
+        // Initialize optimized animations that depend on observerManager
+        animateUnlockTitle();
+        initPainPointAnimations();
+        
         // Add loaded class to body
         document.body.classList.add('loaded');
+    }
+
+    // Optimized unlock title animations using consolidated observer
+    function animateUnlockTitle() {
+        const title = document.querySelector('.unlock-title');
+        const subtitle = document.querySelector('.unlock-subtitle');
+        
+        if (title && subtitle) {
+            const callback = function(entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        performanceUtils.addWillChange(subtitle, 'transform, opacity');
+                        performanceUtils.addWillChange(title, 'transform, opacity');
+                        
+                        requestAnimationFrame(() => {
+                            subtitle.style.opacity = '1';
+                            subtitle.style.transform = 'translate3d(0, 0, 0)';
+                            
+                            setTimeout(() => {
+                                title.style.opacity = '1';
+                                title.style.transform = 'translate3d(0, 0, 0)';
+                            }, 200);
+                        });
+                        
+                        // Clean up after animations
+                        setTimeout(() => {
+                            performanceUtils.removeWillChange(subtitle);
+                            performanceUtils.removeWillChange(title);
+                        }, 800);
+                    }
+                });
+            };
+            
+            const observer = observerManager.create('unlockTitle', callback, { threshold: 0.5 });
+            
+            // Set initial state with hardware acceleration
+            subtitle.style.opacity = '0';
+            subtitle.style.transform = 'translate3d(0, 20px, 0)';
+            subtitle.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            
+            title.style.opacity = '0';
+            title.style.transform = 'translate3d(0, 20px, 0)';
+            title.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            
+            observer.observe(title);
+        }
+    }
+
+    // Optimized pain point animations using consolidated observer
+    function initPainPointAnimations() {
+        const painPointCards = document.querySelectorAll('.pain-point-card');
+        const title = document.querySelector('.pain-points-title');
+        
+        if (painPointCards.length > 0) {
+            const cardCallback = function(entries) {
+                entries.forEach((entry, index) => {
+                    if (entry.isIntersecting && !entry.target.classList.contains('pain-point-animated')) {
+                        performanceUtils.addWillChange(entry.target);
+                        
+                        requestAnimationFrame(() => {
+                            setTimeout(() => {
+                                entry.target.classList.add('animate-on-scroll', 'pain-point-animated');
+                            }, index * 100);
+                        });
+                        
+                        setTimeout(() => {
+                            performanceUtils.removeWillChange(entry.target);
+                        }, (index * 100) + 600);
+                    }
+                });
+            };
+            
+            const cardObserver = observerManager.create('painPointCards', cardCallback, {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            });
+            
+            // Optimized hover effects for pain point cards
+            painPointCards.forEach((card, index) => {
+                card.style.transition = 'transform 0.3s ease, box-shadow 0.3s ease';
+                cardObserver.observe(card);
+                
+                card.addEventListener('mouseenter', () => {
+                    performanceUtils.addWillChange(card, 'transform, box-shadow');
+                    card.style.transform = 'translate3d(0, -5px, 0) scale(1.02)';
+                    card.style.boxShadow = '0 25px 50px rgba(37, 99, 235, 0.4)';
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'translate3d(0, 0, 0) scale(1)';
+                    card.style.boxShadow = '0 20px 40px rgba(37, 99, 235, 0.3)';
+                    
+                    setTimeout(() => {
+                        performanceUtils.removeWillChange(card);
+                    }, 300);
+                });
+            });
+        }
+        
+        // Pain point title animation
+        if (title) {
+            const titleCallback = function(entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        performanceUtils.addWillChange(title, 'transform, opacity');
+                        
+                        requestAnimationFrame(() => {
+                            title.style.opacity = '1';
+                            title.style.transform = 'translate3d(0, 0, 0)';
+                            title.classList.add('animate-title');
+                        });
+                        
+                        setTimeout(() => {
+                            performanceUtils.removeWillChange(title);
+                        }, 800);
+                    }
+                });
+            };
+            
+            const titleObserver = observerManager.create('painPointTitle', titleCallback, { threshold: 0.5 });
+            
+            // Set initial state
+            title.style.opacity = '0';
+            title.style.transform = 'translate3d(0, 30px, 0)';
+            title.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+            
+            titleObserver.observe(title);
+        }
     }
 
     // Run initialization
@@ -422,195 +846,3 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
-
-// Unlock Potential Section Animations
-function initUnlockPotentialAnimations() {
-    const unlockCards = document.querySelectorAll('.unlock-card');
-    
-    // Intersection Observer for scroll animations
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach((entry, index) => {
-            if (entry.isIntersecting) {
-                setTimeout(() => {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
-                }, index * 200); // Stagger the animations
-            }
-        });
-    }, {
-        threshold: 0.2,
-        rootMargin: '0px 0px -50px 0px'
-    });
-    
-    // Set initial state and observe cards
-    unlockCards.forEach((card) => {
-        card.style.opacity = '0';
-        card.style.transform = 'translateY(30px)';
-        card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-        observer.observe(card);
-    });
-    
-    // Add hover sound effect (optional)
-    unlockCards.forEach(card => {
-        card.addEventListener('mouseenter', () => {
-            // Optional: Add subtle scale effect on hover
-            card.style.transform = 'translateY(-5px) scale(1.01)';
-        });
-        
-        card.addEventListener('mouseleave', () => {
-            card.style.transform = 'translateY(0) scale(1)';
-        });
-    });
-}
-
-// Initialize animations when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    // Add small delay to ensure CSS is loaded
-    setTimeout(initUnlockPotentialAnimations, 100);
-});
-
-// Add smooth reveal animation for the unlock title
-function animateUnlockTitle() {
-    const title = document.querySelector('.unlock-title');
-    const subtitle = document.querySelector('.unlock-subtitle');
-    
-    if (title && subtitle) {
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    subtitle.style.opacity = '1';
-                    subtitle.style.transform = 'translateY(0)';
-                    
-                    setTimeout(() => {
-                        title.style.opacity = '1';
-                        title.style.transform = 'translateY(0)';
-                    }, 200);
-                }
-            });
-        }, { threshold: 0.5 });
-        
-        // Set initial state
-        subtitle.style.opacity = '0';
-        subtitle.style.transform = 'translateY(20px)';
-        subtitle.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-        
-        title.style.opacity = '0';
-        title.style.transform = 'translateY(20px)';
-        title.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-        
-        observer.observe(title);
-    }
-}
-
-// Add title animation
-document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(animateUnlockTitle, 150);
-});
-
-
-
-// Pain Point Cards Animation
-function initPainPointAnimations() {
-    const painPointCards = document.querySelectorAll('.pain-point-card');
-    const painPointSection = document.querySelector('.pain-points-section');
-    
-    if (painPointCards.length === 0) return;
-
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                painPointCards.forEach((card, index) => {
-                    setTimeout(() => {
-                        card.style.opacity = '1';
-                        card.style.transform = 'translateY(0)';
-                        card.classList.add('animate-reveal');
-                    }, index * 150); // Stagger effect
-                });
-                observer.unobserve(entry.target);
-            }
-        });
-    }, { threshold: 0.3 });
-
-    // Set initial state
-    painPointCards.forEach(card => {
-        card.style.opacity = '0';
-        card.style.transform = 'translateY(30px)';
-        card.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
-        
-        // Add enhanced hover effects
-        card.addEventListener('mouseenter', () => {
-            card.style.transform = 'translateY(-8px)';
-            card.style.boxShadow = '0 25px 50px rgba(37, 99, 235, 0.4)';
-        });
-        
-        card.addEventListener('mouseleave', () => {
-            card.style.transform = 'translateY(0)';
-            card.style.boxShadow = '0 20px 40px rgba(37, 99, 235, 0.3)';
-        });
-        
-        // Add click ripple effect
-        card.addEventListener('click', function(e) {
-            const ripple = document.createElement('span');
-            const rect = this.getBoundingClientRect();
-            const size = Math.max(rect.width, rect.height);
-            const x = e.clientX - rect.left - size / 2;
-            const y = e.clientY - rect.top - size / 2;
-            
-            ripple.style.cssText = `
-                position: absolute;
-                width: ${size}px;
-                height: ${size}px;
-                left: ${x}px;
-                top: ${y}px;
-                background: rgba(37, 99, 235, 0.3);
-                border-radius: 50%;
-                transform: scale(0);
-                animation: ripple 0.6s linear;
-                pointer-events: none;
-                z-index: 1;
-            `;
-            
-            this.style.position = 'relative';
-            this.style.overflow = 'hidden';
-            this.appendChild(ripple);
-            
-            setTimeout(() => {
-                ripple.remove();
-            }, 600);
-        });
-    });
-
-    if (painPointSection) {
-        observer.observe(painPointSection);
-    }
-}
-
-// Pain Point Title Animation
-function animatePainPointTitle() {
-    const title = document.querySelector('.pain-points-title');
-    
-    if (title) {
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    title.style.opacity = '1';
-                    title.style.transform = 'translateY(0)';
-                    title.classList.add('animate-title');
-                }
-            });
-        }, { threshold: 0.5 });
-        
-        // Set initial state
-        title.style.opacity = '0';
-        title.style.transform = 'translateY(30px)';
-        title.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
-        
-        observer.observe(title);
-    }
-}
-
-// Initialize pain point animations
-document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(initPainPointAnimations, 100);
-    setTimeout(animatePainPointTitle, 50);
-});
