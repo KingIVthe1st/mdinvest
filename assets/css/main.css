@@ -340,7 +340,7 @@ section {
 .pricing-section {
     background: #FFFFFF;
     color: #2F2F2F;
-    padding: 100px 0;
+    padding: 80px 0;
 }
 
 .pricing-section .section-title {
@@ -408,7 +408,7 @@ section {
 
 .pricing-header {
     background: #FFFFFF;
-    padding: 50px 0 0 0;
+    padding: 30px 0 0 0;
 }
 
 .wolf-icon {
@@ -439,7 +439,7 @@ section {
 
 .pricing-price {
     background: #FFFFFF;
-    padding: 15px 0 50px 0;
+    padding: 15px 0 30px 0;
     display: flex;
     justify-content: center;
     align-items: flex-start;
@@ -471,7 +471,7 @@ section {
 
 .pricing-features {
     background: #FFFFFF;
-    padding: 0 40px 30px;
+    padding: 0 40px 20px;
 }
 
 .pricing-features ul {
@@ -947,6 +947,197 @@ section {
     transform: translateX(5px);
     transition: all 0.3s ease;
 }
+/* Compact Course Modules Styling */
+.course-modules-container-compact {
+    background: #FFFFFF;
+    padding: 0;
+    text-align: left;
+}
+
+.modules-title-compact {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 1.5rem;
+    color: #151515;
+    text-align: center;
+    margin-bottom: 20px;
+    padding: 15px 0 0 0;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 15px;
+}
+
+.modules-overview {
+    padding: 0 20px;
+    margin-bottom: 20px;
+}
+
+.module-phase {
+    margin-bottom: 15px;
+    padding: 15px 20px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 12px;
+    border-left: 4px solid #BF9B30;
+    transition: all 0.3s ease;
+}
+
+.module-phase:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border-left-color: #D4AF37;
+}
+
+.phase-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.phase-header i {
+    font-size: 1.1rem;
+    color: #BF9B30;
+}
+
+.phase-header span {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #151515;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.phase-content {
+    font-size: 0.9rem;
+    color: #666;
+    margin: 0;
+    line-height: 1.4;
+    font-weight: 500;
+}
+
+/* Compact Course Summary */
+.course-summary-compact {
+    margin-top: 15px;
+    padding: 20px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 12px;
+    border: 2px solid #BF9B30;
+}
+
+.summary-stats-compact {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.stat-item-compact {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease;
+}
+
+.stat-item-compact:hover {
+    transform: translateY(-2px);
+}
+
+.stat-item-compact i {
+    font-size: 1.2rem;
+    color: #BF9B30;
+    flex-shrink: 0;
+}
+
+.stat-text {
+    font-size: 0.9rem;
+    color: #151515;
+    font-weight: 600;
+    font-family: 'Roboto', sans-serif;
+}
+
+/* Responsive Design for Compact Layout */
+@media (max-width: 768px) {
+    .modules-title-compact {
+        font-size: 1.3rem;
+        padding: 12px 0;
+    }
+    
+    .modules-overview {
+        padding: 0 15px;
+    }
+    
+    .module-phase {
+        padding: 12px 15px;
+        margin-bottom: 12px;
+    }
+    
+    .phase-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 6px;
+    }
+    
+    .phase-header i {
+        font-size: 1.3rem;
+    }
+    
+    .phase-content {
+        text-align: center;
+        font-size: 0.85rem;
+    }
+    
+    .course-summary-compact {
+        padding: 15px;
+        margin-top: 12px;
+    }
+    
+    .summary-stats-compact {
+        gap: 10px;
+    }
+    
+    .stat-item-compact {
+        padding: 6px 10px;
+        justify-content: center;
+    }
+    
+    .stat-text {
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .modules-title-compact {
+        font-size: 1.2rem;
+    }
+    
+    .module-phase {
+        padding: 10px 12px;
+    }
+    
+    .phase-header span {
+        font-size: 0.9rem;
+    }
+    
+    .phase-content {
+        font-size: 0.8rem;
+    }
+    
+    .stat-item-compact {
+        flex-direction: column;
+        text-align: center;
+        gap: 6px;
+        padding: 8px;
+    }
+    
+    .stat-item-compact i {
+        font-size: 1.1rem;
+    }
+}
+
 
 /* Testimonials Section */
 .testimonials-section {
