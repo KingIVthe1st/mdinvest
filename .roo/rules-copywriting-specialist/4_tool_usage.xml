@@ -1,0 +1,363 @@
+<tool_usage_guide>
+  <mode_overview>
+    This guide specifies how the copywriting specialist mode should effectively use Roocode's tools
+    to research, create, optimize, and manage marketing content across various formats and platforms.
+  </mode_overview>
+
+  <tool_priorities>
+    <priority level="1">
+      <tool>browser_snapshot</tool>
+      <when>Research competitor copy, analyze landing pages, or study successful campaigns</when>
+      <why>Visual analysis provides crucial context for copywriting decisions and competitive research</why>
+    </priority>
+    <priority level="2">
+      <tool>codebase_search</tool>
+      <when>Finding existing marketing content, brand guidelines, or copy templates</when>
+      <why>Semantic search helps locate relevant existing content and maintain brand consistency</why>
+    </priority>
+    <priority level="3">
+      <tool>read_file</tool>
+      <when>After identifying content files to understand current messaging and tone</when>
+      <why>Get full context of existing copy to maintain consistency and identify improvement opportunities</why>
+    </priority>
+    <priority level="4">
+      <tool>write_to_file</tool>
+      <when>Creating new marketing content files or comprehensive rewrites</when>
+      <why>Efficient for creating complete new copy pieces from scratch</why>
+    </priority>
+    <priority level="5">
+      <tool>apply_diff</tool>
+      <when>Making targeted improvements to existing copy</when>
+      <why>Precise edits for optimizing headlines, CTAs, or specific sections</why>
+    </priority>
+  </tool_priorities>
+
+  <research_workflow>
+    <phase name="market_research">
+      <tool_sequence>
+        <step number="1">
+          <tool>browser_navigate</tool>
+          <purpose>Visit competitor websites and successful campaigns</purpose>
+          <example>
+            <scenario>Researching SaaS landing page copy</scenario>
+            <usage>Navigate to top competitor landing pages to analyze messaging approaches</usage>
+          </example>
+        </step>
+        <step number="2">
+          <tool>browser_snapshot</tool>
+          <purpose>Capture competitor copy for analysis</purpose>
+          <best_practice>Take full-page screenshots to analyze complete user journey</best_practice>
+        </step>
+        <step number="3">
+          <tool>browser_evaluate</tool>
+          <purpose>Extract text content for detailed analysis</purpose>
+          <script_example>
+            <![CDATA[
+() => {
+  return {
+    headline: document.querySelector('h1')?.textContent,
+    subheadline: document.querySelector('.hero p')?.textContent,
+    cta: document.querySelector('.cta-button')?.textContent,
+    benefits: Array.from(document.querySelectorAll('.benefit')).map(el => el.textContent)
+  }
+}
+            ]]>
+          </script_example>
+        </step>
+      </tool_sequence>
+    </phase>
+
+    <phase name="brand_context_research">
+      <tool_sequence>
+        <step number="1">
+          <tool>codebase_search</tool>
+          <purpose>Find existing brand guidelines and marketing content</purpose>
+          <search_queries>
+            <query>brand guidelines voice tone</query>
+            <query>marketing copy templates</query>
+            <query>customer personas target audience</query>
+            <query>value proposition messaging</query>
+          </search_queries>
+        </step>
+        <step number="2">
+          <tool>read_file</tool>
+          <purpose>Understand current brand voice and messaging strategy</purpose>
+          <focus_areas>
+            <area>Tone of voice guidelines</area>
+            <area>Key value propositions</area>
+            <area>Target audience descriptions</area>
+            <area>Existing successful copy examples</area>
+          </focus_areas>
+        </step>
+      </tool_sequence>
+    </phase>
+  </research_workflow>
+
+  <content_creation_workflow>
+    <tool_specific_guidance>
+      <tool name="write_to_file">
+        <when_to_use>
+          <scenario>Creating new landing pages from scratch</scenario>
+          <scenario>Writing complete email sequences</scenario>
+          <scenario>Developing ad campaign copy sets</scenario>
+          <scenario>Building social media content calendars</scenario>
+        </when_to_use>
+        <best_practices>
+          <practice>Always include comprehensive content with all necessary elements</practice>
+          <practice>Structure files with clear sections and headers</practice>
+          <practice>Include metadata like target audience and campaign objectives</practice>
+          <practice>Use markdown formatting for readability</practice>
+        </best_practices>
+        <file_organization>
+          <structure>
+            <folder>marketing/</folder>
+            <subfolder>landing-pages/</subfolder>
+            <subfolder>email-campaigns/</subfolder>
+            <subfolder>social-media/</subfolder>
+            <subfolder>ads/</subfolder>
+            <subfolder>templates/</subfolder>
+          </structure>
+        </file_organization>
+        <example_usage>
+          <![CDATA[
+<write_to_file>
+<path>marketing/landing-pages/saas-product-launch.md</path>
+<content>
+# SaaS Product Launch Landing Page
+
+## Campaign Details
+- **Target Audience**: Small business owners struggling with manual processes
+- **Primary Goal**: Free trial signups
+- **Key Benefit**: Save 20+ hours per week with automation
+- **Tone**: Professional but approachable, benefit-focused
+
+## Hero Section
+### Headline
+Stop Wasting 20+ Hours Per Week on Manual Tasks
+
+### Subheadline
+Join 10,000+ business owners who've automated their workflows and reclaimed their time to focus on what really matters - growing their business.
+
+### CTA Button
+Start Your Free 14-Day Trial
+
+## [Rest of landing page content...]
+</content>
+</write_to_file>
+          ]]>
+        </example_usage>
+      </tool>
+
+      <tool name="apply_diff">
+        <when_to_use>
+          <scenario>A/B testing headline variations</scenario>
+          <scenario>Optimizing CTAs based on performance data</scenario>
+          <scenario>Updating copy for seasonal campaigns</scenario>
+          <scenario>Making targeted improvements to specific sections</scenario>
+        </when_to_use>
+        <best_practices>
+          <practice>Always read the file first to understand context</practice>
+          <practice>Make multiple related changes in one diff when possible</practice>
+          <practice>Include line numbers for precision</practice>
+          <practice>Test changes that might affect other sections</practice>
+        </best_practices>
+      </tool>
+    </tool_specific_guidance>
+  </content_creation_workflow>
+
+  <optimization_workflow>
+    <browser_tools_for_testing>
+      <tool name="browser_navigate">
+        <purpose>Access A/B testing platforms and analytics tools</purpose>
+        <common_destinations>
+          <site>Google Analytics for conversion tracking</site>
+          <site>Hotjar for heatmap analysis</site>
+          <site>Optimizely for A/B testing setup</site>
+          <site>Mailchimp for email performance metrics</site>
+        </common_destinations>
+      </tool>
+
+      <tool name="browser_evaluate">
+        <purpose>Extract performance data and metrics</purpose>
+        <data_extraction_scripts>
+          <script name="conversion_rates">
+            <![CDATA[
+() => {
+  const conversionData = document.querySelector('.conversion-rate');
+  const clickData = document.querySelector('.click-through-rate');
+  return {
+    conversion: conversionData?.textContent,
+    clickThrough: clickData?.textContent,
+    timestamp: new Date().toISOString()
+  }
+}
+            ]]>
+          </script>
+          <script name="email_metrics">
+            <![CDATA[
+() => {
+  return {
+    openRate: document.querySelector('.open-rate')?.textContent,
+    clickRate: document.querySelector('.click-rate')?.textContent,
+    bounceRate: document.querySelector('.bounce-rate')?.textContent
+  }
+}
+            ]]>
+          </script>
+        </data_extraction_scripts>
+      </tool>
+
+      <tool name="browser_click">
+        <purpose>Test call-to-action functionality and user flows</purpose>
+        <testing_scenarios>
+          <scenario>Verify CTA buttons work correctly</scenario>
+          <scenario>Test form submission processes</scenario>
+          <scenario>Navigate through conversion funnels</scenario>
+          <scenario>Check mobile responsiveness of interactive elements</scenario>
+        </testing_scenarios>
+      </tool>
+    </browser_tools_for_testing>
+  </optimization_workflow>
+
+  <communication_workflow>
+    <tool name="ask_followup_question">
+      <copywriting_specific_usage>
+        <when_to_use>
+          <scenario>Clarifying target audience demographics and psychographics</scenario>
+          <scenario>Understanding campaign objectives and success metrics</scenario>
+          <scenario>Determining brand voice and tone preferences</scenario>
+          <scenario>Identifying competitor positioning and differentiation</scenario>
+          <scenario>Gathering feedback on draft copy iterations</scenario>
+        </when_to_use>
+        
+        <question_patterns>
+          <pattern category="audience_research">
+            <question>Who is your primary target audience for this campaign?</question>
+            <suggestions>
+              <suggest>Small business owners aged 25-45 struggling with time management and looking for automation solutions</suggest>
+              <suggest>Enterprise decision-makers in Fortune 500 companies seeking scalable technology solutions</suggest>
+              <suggest>E-commerce store owners wanting to increase conversions and reduce cart abandonment</suggest>
+              <suggest>SaaS companies needing better customer onboarding and retention strategies</suggest>
+            </suggestions>
+          </pattern>
+          
+          <pattern category="campaign_goals">
+            <question>What is the primary goal and success metric for this marketing campaign?</question>
+            <suggestions>
+              <suggest>Increase free trial signups by 25% over the next quarter with a focus on qualified leads</suggest>
+              <suggest>Generate 500+ qualified leads per month for sales team follow-up and nurturing</suggest>
+              <suggest>Drive 10,000+ visitors to new product launch landing page with 8%+ conversion rate</suggest>
+              <suggest>Improve email campaign performance with 35%+ open rates and 8%+ click-through rates</suggest>
+            </suggestions>
+          </pattern>
+          
+          <pattern category="brand_voice">
+            <question>How would you describe your brand's tone, personality, and communication style?</question>
+            <suggestions>
+              <suggest>Professional yet approachable, like a trusted business advisor who simplifies complex topics</suggest>
+              <suggest>Friendly and conversational, focusing on relatability and shared struggles with humor</suggest>
+              <suggest>Authoritative and data-driven, emphasizing expertise and proven results with case studies</suggest>
+              <suggest>Casual and innovative, making cutting-edge technology accessible and exciting for everyone</suggest>
+            </suggestions>
+          </pattern>
+          
+          <pattern category="competitive_landscape">
+            <question>Who are your main competitors and how do you want to differentiate your messaging?</question>
+            <suggestions>
+              <suggest>Position against established players by emphasizing innovation, speed, and better user experience</suggest>
+              <suggest>Differentiate through superior customer support, personalized service, and community-driven approach</suggest>
+              <suggest>Focus on cost-effectiveness and ROI compared to premium enterprise solutions</suggest>
+              <suggest>Highlight unique features and capabilities that competitors don't offer</suggest>
+            </suggestions>
+          </pattern>
+        </question_patterns>
+      </copywriting_specific_usage>
+    </tool>
+  </communication_workflow>
+
+  <quality_assurance_tools>
+    <content_validation>
+      <checklist>
+        <item>Spelling and grammar verification using browser-based tools</item>
+        <item>Brand voice consistency check against established guidelines</item>
+        <item>CTA placement, clarity, and action-oriented language verification</item>
+        <item>Mobile responsiveness and readability testing</item>
+        <item>Legal compliance review for claims and disclaimers</item>
+        <item>A/B test setup validation for headline and CTA variations</item>
+      </checklist>
+      
+      <automated_checks>
+        <check name="readability_score">
+          <tool>browser_navigate</tool>
+          <destination>readability analyzers like Hemingway Editor</destination>
+          <purpose>Ensure copy is accessible and easy to understand</purpose>
+        </check>
+        <check name="seo_optimization">
+          <validation>Meta descriptions, keyword usage, and search optimization</validation>
+        </check>
+        <check name="accessibility">
+          <requirement>Ensure copy meets WCAG accessibility guidelines</requirement>
+        </check>
+      </automated_checks>
+    </content_validation>
+  </quality_assurance_tools>
+
+  <collaboration_workflow>
+    <stakeholder_communication>
+      <tool name="write_to_file">
+        <purpose>Create client presentation documents and campaign reports</purpose>
+        <document_types>
+          <type>Campaign strategy briefs with audience analysis and messaging framework</type>
+          <type>Copy performance reports with metrics analysis and optimization recommendations</type>
+          <type>A/B testing results summaries with statistical significance and next steps</type>
+          <type>Content calendar proposals with campaign timeline and deliverables</type>
+          <type>Brand voice documentation and style guide updates</type>
+        </document_types>
+      </tool>
+      
+      <tool name="read_file">
+        <purpose>Review client feedback, brand guidelines, and performance data</purpose>
+        <focus_areas>
+          <area>Brand style guides and voice documentation for consistency</area>
+          <area>Previous campaign performance data and learnings</area>
+          <area>Client feedback on draft copy and revision requests</area>
+          <area>Competitive analysis reports and market positioning</area>
+          <area>Customer feedback and testimonials for social proof</area>
+        </focus_areas>
+      </tool>
+    </stakeholder_communication>
+  </collaboration_workflow>
+
+  <performance_optimization_tools>
+    <analytics_integration>
+      <tool name="browser_navigate">
+        <analytics_platforms>
+          <platform>Google Analytics for traffic and conversion tracking</platform>
+          <platform>Facebook Ads Manager for social media campaign performance</platform>
+          <platform>Google Ads for search campaign optimization</platform>
+          <platform>Email platform analytics (Mailchimp, ConvertKit, etc.)</platform>
+        </analytics_platforms>
+      </tool>
+      
+      <tool name="browser_evaluate">
+        <metric_extraction>
+          <script name="comprehensive_metrics">
+            <![CDATA[
+() => {
+  return {
+    pageViews: document.querySelector('[data-metric="page-views"]')?.textContent,
+    conversionRate: document.querySelector('[data-metric="conversion-rate"]')?.textContent,
+    bounceRate: document.querySelector('[data-metric="bounce-rate"]')?.textContent,
+    avgTimeOnPage: document.querySelector('[data-metric="avg-time"]')?.textContent,
+    clickThroughRate: document.querySelector('[data-metric="ctr"]')?.textContent,
+    costPerAcquisition: document.querySelector('[data-metric="cpa"]')?.textContent,
+    timestamp: new Date().toISOString()
+  }
+}
+            ]]>
+          </script>
+        </metric_extraction>
+      </tool>
+    </analytics_integration>
+  </performance_optimization_tools>
+</tool_usage_guide>

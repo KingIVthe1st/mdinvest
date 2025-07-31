@@ -1,0 +1,415 @@
+<copywriting_patterns>
+  <content_frameworks>
+    <framework name="AIDA">
+      <description>Classic persuasion framework for sales copy</description>
+      <structure>
+        <stage name="Attention">
+          <purpose>Grab the reader's attention with a compelling headline</purpose>
+          <techniques>
+            <technique>Ask a provocative question</technique>
+            <technique>Make a bold statement</technique>
+            <technique>Share a surprising statistic</technique>
+            <technique>Use power words and emotional triggers</technique>
+          </techniques>
+          <example>"Are you tired of working 60-hour weeks just to stay afloat?"</example>
+        </stage>
+        <stage name="Interest">
+          <purpose>Build interest by identifying with their problem</purpose>
+          <techniques>
+            <technique>Describe the pain point in detail</technique>
+            <technique>Share relatable scenarios</technique>
+            <technique>Use storytelling elements</technique>
+          </techniques>
+          <example>"Every entrepreneur faces the same challenge: too much to do, not enough time. You're juggling clients, managing projects, and trying to grow your business, but you feel like you're barely keeping your head above water."</example>
+        </stage>
+        <stage name="Desire">
+          <purpose>Create desire by presenting the solution and benefits</purpose>
+          <techniques>
+            <technique>Paint a picture of the desired outcome</technique>
+            <technique>List specific benefits and transformations</technique>
+            <technique>Include social proof and testimonials</technique>
+          </techniques>
+          <example>"Imagine having an extra 20 hours per week to focus on what really matters. Our automation platform has helped 500+ entrepreneurs reclaim their time and double their revenue."</example>
+        </stage>
+        <stage name="Action">
+          <purpose>Motivate immediate action with a clear call-to-action</purpose>
+          <techniques>
+            <technique>Create urgency with time-sensitive offers</technique>
+            <technique>Reduce risk with guarantees</technique>
+            <technique>Make the next step crystal clear</technique>
+          </techniques>
+          <example>"Start your 14-day free trial today - no credit card required. Join the thousands of entrepreneurs who've already transformed their businesses."</example>
+        </stage>
+      </structure>
+    </framework>
+
+    <framework name="PAS">
+      <description>Problem-Agitate-Solution framework for addressing pain points</description>
+      <structure>
+        <stage name="Problem">
+          <purpose>Identify and articulate the target audience's main problem</purpose>
+          <example>"Your website visitors are leaving without buying anything"</example>
+        </stage>
+        <stage name="Agitate">
+          <purpose>Intensify the emotional impact of the problem</purpose>
+          <example>"Every day you delay, you're losing potential customers to competitors who have optimized their conversion funnels. That's money walking out the door."</example>
+        </stage>
+        <stage name="Solution">
+          <purpose>Present your product/service as the solution</purpose>
+          <example>"Our conversion optimization toolkit identifies exactly what's stopping visitors from buying and fixes it automatically."</example>
+        </stage>
+      </structure>
+    </framework>
+
+    <framework name="Before_After_Bridge">
+      <description>Transformation-focused framework showing the journey from current state to desired state</description>
+      <structure>
+        <stage name="Before">
+          <purpose>Describe the current problematic situation</purpose>
+          <example>"You're spending 4 hours every day on manual data entry, leaving no time for strategic work"</example>
+        </stage>
+        <stage name="After">
+          <purpose>Paint the picture of the ideal future state</purpose>
+          <example>"Imagine completing all your data processing in 30 minutes and spending the rest of your day on high-value activities that grow your business"</example>
+        </stage>
+        <stage name="Bridge">
+          <purpose>Position your solution as the bridge between before and after</purpose>
+          <example>"Our AI-powered automation platform is the bridge that gets you from overwhelmed to optimized in just 30 days"</example>
+        </stage>
+      </structure>
+    </framework>
+
+    <framework name="PASTOR">
+      <description>Comprehensive framework for longer-form sales copy</description>
+      <structure>
+        <stage name="Problem">Identify the core problem</stage>
+        <stage name="Amplify">Intensify the consequences of not solving it</stage>
+        <stage name="Story">Share a relatable story or case study</stage>
+        <stage name="Transformation">Show the transformation possible</stage>
+        <stage name="Offer">Present your solution and offer</stage>
+        <stage name="Response">Call for immediate action</stage>
+      </structure>
+    </framework>
+  </content_frameworks>
+
+  <headline_templates>
+    <template category="benefit_focused">
+      <pattern>"How to [Achieve Desired Outcome] in [Time Frame] [Without Common Objection]"</pattern>
+      <example>"How to Double Your Email Open Rates in 30 Days Without Spending More on Ads"</example>
+    </template>
+
+    <template category="number_driven">
+      <pattern>"[Number] [Adjective] Ways to [Achieve Goal] [Time Frame]"</pattern>
+      <example>"7 Proven Ways to Increase Conversion Rates This Month"</example>
+    </template>
+
+    <template category="question_based">
+      <pattern>"Are You [Negative Situation] Because of [Root Cause]?"</pattern>
+      <example>"Are You Losing Customers Because of Slow Website Loading Times?"</example>
+    </template>
+
+    <template category="transformation">
+      <pattern>"From [Current State] to [Desired State]: [How/Method]"</pattern>
+      <example>"From Struggling Freelancer to Six-Figure Agency: The Complete Blueprint"</example>
+    </template>
+
+    <template category="warning">
+      <pattern>"Warning: [Common Mistake] Is [Negative Consequence]"</pattern>
+      <example>"Warning: This Marketing Mistake Is Costing You $10,000 Per Month"</example>
+    </template>
+
+    <template category="secret_reveal">
+      <pattern>"The [Adjective] Secret [Authority Figure] Don't Want You to Know"</pattern>
+      <example>"The Simple Secret Top Marketers Don't Want You to Know"</example>
+    </template>
+  </headline_templates>
+
+  <email_templates>
+    <template name="welcome_series">
+      <subject_line>"Welcome! Here's what happens next..."</subject_line>
+      <structure>
+        <section name="warm_welcome">
+          <content>Thank the subscriber and confirm their decision</content>
+          <example>"Welcome to the [Company] family! You made a smart choice by joining thousands of entrepreneurs who are already growing their businesses faster."</example>
+        </section>
+        <section name="set_expectations">
+          <content>Outline what they'll receive and when</content>
+          <example>"Over the next 5 days, I'll send you my proven strategies for [specific outcome]. Each email contains actionable tips you can implement immediately."</example>
+        </section>
+        <section name="first_value">
+          <content>Provide immediate value</content>
+          <example>"To get started, here's my #1 tip that helped client X achieve Y result in Z timeframe..."</example>
+        </section>
+        <section name="soft_cta">
+          <content>Include a low-pressure next step</content>
+          <example>"Ready to dive deeper? Check out this free resource: [link]"</example>
+        </section>
+      </structure>
+    </template>
+
+    <template name="promotional_email">
+      <subject_line>"[Benefit] in [Time Frame] (Limited Time)"</subject_line>
+      <structure>
+        <section name="personalized_opening">
+          <content>Address the reader personally and reference their interests</content>
+          <example>"Hi [Name], I noticed you downloaded our guide on [topic], so I thought you'd be interested in this exclusive opportunity..."</example>
+        </section>
+        <section name="problem_reminder">
+          <content>Remind them of the problem you solve</content>
+          <example>"You know how frustrating it is when [specific problem]. You've probably tried [common solutions] but still aren't seeing the results you want."</example>
+        </section>
+        <section name="solution_presentation">
+          <content>Present your solution with specific benefits</content>
+          <example>"That's exactly why I created [product/service]. It [specific benefit 1], [specific benefit 2], and [specific benefit 3]."</example>
+        </section>
+        <section name="social_proof">
+          <content>Include testimonials or case studies</content>
+          <example>"Just last week, [client name] used this exact system to [specific result]. Here's what they said: '[testimonial]'"</example>
+        </section>
+        <section name="offer_details">
+          <content>Present the offer with urgency</content>
+          <example>"For the next 48 hours only, you can get [product] for just $X (normally $Y). This offer expires Friday at midnight."</example>
+        </section>
+        <section name="strong_cta">
+          <content>Clear, compelling call-to-action</content>
+          <example>"Click here to claim your copy before this offer expires: [button]"</example>
+        </section>
+      </structure>
+    </template>
+
+    <template name="cart_abandonment">
+      <subject_line>"Forgot something? Your items are waiting..."</subject_line>
+      <structure>
+        <section name="gentle_reminder">
+          <content>Non-pushy reminder about abandoned items</content>
+          <example>"Hi [Name], I noticed you were checking out [product name] but didn't complete your purchase. No worries - it happens to the best of us!"</example>
+        </section>
+        <section name="benefit_reinforcement">
+          <content>Remind them why they wanted it</content>
+          <example>"Just to refresh your memory, [product] will help you [primary benefit] so you can [desired outcome]."</example>
+        </section>
+        <section name="urgency_creation">
+          <content>Add gentle urgency</content>
+          <example>"I'm holding your spot for the next 24 hours, but after that, I can't guarantee availability."</example>
+        </section>
+        <section name="easy_completion">
+          <content>Make it easy to complete purchase</content>
+          <example>"Complete your purchase with one click: [button]"</example>
+        </section>
+      </structure>
+    </template>
+  </email_templates>
+
+  <landing_page_structures>
+    <structure name="long_form_sales">
+      <sections>
+        <section name="hero" priority="high">
+          <elements>
+            <element>Compelling headline with clear value proposition</element>
+            <element>Supporting subheadline that elaborates</element>
+            <element>Hero image or video</element>
+            <element>Primary call-to-action button</element>
+          </elements>
+        </section>
+        <section name="problem_identification" priority="high">
+          <elements>
+            <element>Detailed problem description</element>
+            <element>Pain point amplification</element>
+            <element>Cost of inaction</element>
+          </elements>
+        </section>
+        <section name="solution_introduction" priority="high">
+          <elements>
+            <element>Solution overview</element>
+            <element>Key benefits (not features)</element>
+            <element>Unique selling proposition</element>
+          </elements>
+        </section>
+        <section name="social_proof" priority="medium">
+          <elements>
+            <element>Customer testimonials with photos</element>
+            <element>Case studies with specific results</element>
+            <element>Company logos or media mentions</element>
+            <element>Usage statistics or user counts</element>
+          </elements>
+        </section>
+        <section name="features_benefits" priority="medium">
+          <elements>
+            <element>Detailed feature breakdown</element>
+            <element>Benefit explanation for each feature</element>
+            <element>Visual demonstrations</element>
+          </elements>
+        </section>
+        <section name="objection_handling" priority="medium">
+          <elements>
+            <element>FAQ section</element>
+            <element>Common concern addressed</element>
+            <element>Risk reversal (guarantees)</element>
+          </elements>
+        </section>
+        <section name="urgency_scarcity" priority="low">
+          <elements>
+            <element>Limited-time offers</element>
+            <element>Bonus incentives</element>
+            <element>Countdown timers</element>
+          </elements>
+        </section>
+        <section name="final_cta" priority="high">
+          <elements>
+            <element>Benefit-focused headline</element>
+            <element>Clear call-to-action button</element>
+            <element>Security badges and guarantees</element>
+            <element>Contact information</element>
+          </elements>
+        </section>
+      </sections>
+    </structure>
+
+    <structure name="short_form_lead_gen">
+      <sections>
+        <section name="hero" priority="high">
+          <elements>
+            <element>Clear value proposition headline</element>
+            <element>Subheadline explaining the offer</element>
+            <element>Lead magnet image or mockup</element>
+          </elements>
+        </section>
+        <section name="benefit_bullets" priority="high">
+          <elements>
+            <element>3-5 key benefits of the lead magnet</element>
+            <element>What they'll learn or achieve</element>
+          </elements>
+        </section>
+        <section name="opt_in_form" priority="high">
+          <elements>
+            <element>Minimal form fields (email + name)</element>
+            <element>Compelling button text</element>
+            <element>Privacy statement</element>
+          </elements>
+        </section>
+        <section name="social_proof" priority="medium">
+          <elements>
+            <element>Testimonial quote</element>
+            <element>Number of downloads or subscribers</element>
+          </elements>
+        </section>
+      </sections>
+    </structure>
+  </landing_page_structures>
+
+  <cta_formulas>
+    <formula name="action_benefit">
+      <pattern>"[Action Verb] + [Specific Benefit]"</pattern>
+      <examples>
+        <example>"Get My Free Marketing Plan"</example>
+        <example>"Download Your Conversion Checklist"</example>
+        <example>"Start Saving Time Today"</example>
+      </examples>
+    </formula>
+
+    <formula name="time_sensitive">
+      <pattern>"[Action] + [Time Element]"</pattern>
+      <examples>
+        <example>"Claim Your Spot Now"</example>
+        <example>"Get Instant Access"</example>
+        <example>"Start Your Free Trial Today"</example>
+      </examples>
+    </formula>
+
+    <formula name="risk_free">
+      <pattern>"[Action] + [Risk Removal]"</pattern>
+      <examples>
+        <example>"Try Risk-Free for 30 Days"</example>
+        <example>"Get Started (No Credit Card Required)"</example>
+        <example>"Download Free (No Spam Guarantee)"</example>
+      </examples>
+    </formula>
+
+    <formula name="outcome_focused">
+      <pattern>"[Outcome] + [Time Frame]"</pattern>
+      <examples>
+        <example>"Double Your Sales in 60 Days"</example>
+        <example>"Transform Your Business This Month"</example>
+        <example>"See Results in 24 Hours"</example>
+      </examples>
+    </formula>
+  </cta_formulas>
+
+  <social_media_patterns>
+    <pattern platform="facebook">
+      <structure>
+        <element name="hook">Attention-grabbing first line</element>
+        <element name="story">Brief story or example</element>
+        <element name="lesson">Key takeaway or tip</element>
+        <element name="cta">Call-to-action for engagement</element>
+      </structure>
+      <best_practices>
+        <practice>Use line breaks for readability</practice>
+        <practice>Include emojis strategically</practice>
+        <practice>Ask questions to encourage comments</practice>
+        <practice>Use native video when possible</practice>
+      </best_practices>
+    </pattern>
+
+    <pattern platform="linkedin">
+      <structure>
+        <element name="professional_hook">Industry-relevant opening</element>
+        <element name="insight">Professional insight or experience</element>
+        <element name="value">Actionable advice</element>
+        <element name="discussion_starter">Question for professional discussion</element>
+      </structure>
+      <best_practices>
+        <practice>Use professional tone but personal voice</practice>
+        <practice>Include relevant hashtags (3-5)</practice>
+        <practice>Tag relevant people or companies</practice>
+        <practice>Share behind-the-scenes content</practice>
+      </best_practices>
+    </pattern>
+
+    <pattern platform="twitter">
+      <structure>
+        <element name="concise_hook">Punchy opening statement</element>
+        <element name="key_point">Main message in few words</element>
+        <element name="engagement_element">Question, poll, or call for RTs</element>
+      </structure>
+      <best_practices>
+        <practice>Use threads for longer content</practice>
+        <practice>Include relevant hashtags (1-2)</practice>
+        <practice>Use visuals when possible</practice>
+        <practice>Engage with replies quickly</practice>
+      </best_practices>
+    </pattern>
+  </social_media_patterns>
+
+  <ad_copy_templates>
+    <template platform="google_ads">
+      <structure>
+        <element name="headline_1">Primary benefit or solution (30 chars)</element>
+        <element name="headline_2">Supporting benefit or urgency (30 chars)</element>
+        <element name="headline_3">Brand name or credibility (30 chars)</element>
+        <element name="description_1">Detailed benefit explanation (90 chars)</element>
+        <element name="description_2">Call-to-action and offer details (90 chars)</element>
+      </structure>
+      <example>
+        <headline_1>"Double Your Sales Fast"</headline_1>
+        <headline_2>"Proven System Works"</headline_2>
+        <headline_3>"Trusted by 10,000+ Biz"</headline_3>
+        <description_1>"Get our step-by-step sales system that's helped businesses increase revenue by 200%"</description_1>
+        <description_2>"Start your free trial today. No setup fees. Cancel anytime. Get results in 30 days."</description_2>
+      </example>
+    </template>
+
+    <template platform="facebook_ads">
+      <structure>
+        <element name="headline">Benefit-focused headline (40 chars)</element>
+        <element name="primary_text">Story-driven description (125 chars)</element>
+        <element name="cta_button">Action-oriented button text</element>
+      </structure>
+      <example>
+        <headline>"Transform Your Business in 30 Days"</headline>
+        <primary_text>"Struggling entrepreneur discovers simple system that doubled revenue. Now he's sharing the exact blueprint with other business owners."</primary_text>
+        <cta_button>"Learn More"</cta_button>
+      </example>
+    </template>
+  </ad_copy_templates>
+</copywriting_patterns>
