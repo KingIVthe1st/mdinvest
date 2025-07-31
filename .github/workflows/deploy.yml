@@ -1,0 +1,41 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          
+      - name: Setup Git LFS
+        run: |
+          git lfs install
+          git lfs pull
+          
+      - name: Verify LFS files
+        run: |
+          # Check that LFS files are properly downloaded
+          if [ -f "assets/Videos/0731-compressed.mp4" ]; then
+            FILESIZE=$(stat -c%s "assets/Videos/0731-compressed.mp4")
+            echo "Video file size: $FILESIZE bytes"
+            if [ $FILESIZE -lt 1000000 ]; then
+              echo "ERROR: Video file appears to be an LFS pointer file, not the actual content"
+              exit 1
+            fi
+          else
+            echo "ERROR: Video file not found"
+            exit 1
+          fi
+          
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .
+          force_orphan: true
