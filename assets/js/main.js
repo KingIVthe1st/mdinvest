@@ -312,9 +312,31 @@ document.addEventListener('DOMContentLoaded', function() {
             setTimeout(() => ripplePool.release(ripple), 600);
         }
         
+        // Log video source on page load
+        const videoSources = mainVideoPlayer.querySelectorAll('source');
+        videoSources.forEach((source, index) => {
+            console.log(`Video source ${index}:`, source.src);
+            console.log(`Video source type ${index}:`, source.type);
+            
+            // Test if source is accessible
+            fetch(source.src)
+                .then(response => {
+                    console.log(`Source ${index} fetch response:`, response.status, response.statusText);
+                    if (response.ok) {
+                        console.log(`Source ${index} is accessible`);
+                    } else {
+                        console.error(`Source ${index} is not accessible:`, response.status);
+                    }
+                })
+                .catch(error => {
+                    console.error(`Error fetching source ${index}:`, error);
+                });
+        });
+        
         // Video cover click handler with seamless positioning transition
         videoCoverWrapper.addEventListener('click', function(e) {
             e.preventDefault();
+            console.log('Video cover clicked');
             
             // Prevent multiple clicks during animation
             if (this.classList.contains('animating')) return;
@@ -424,6 +446,16 @@ document.addEventListener('DOMContentLoaded', function() {
         // Enhanced error handling for video loading
         mainVideoPlayer.addEventListener('error', function(e) {
             console.error('Video loading error:', e);
+            console.error('Video error code:', e.target.error.code);
+            console.error('Video error message:', e.target.error.message);
+            
+            // Log video source information
+            const sources = mainVideoPlayer.querySelectorAll('source');
+            sources.forEach((source, index) => {
+                console.error(`Source ${index}:`, source.src);
+                console.error(`Source type ${index}:`, source.type);
+            });
+            
             const videoContainer = this.closest('.video-container');
             
             // Show user-friendly error message
@@ -460,7 +492,21 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Loading state management
         mainVideoPlayer.addEventListener('loadstart', function() {
+            console.log('Video load started');
             this.style.filter = 'brightness(0.8)';
+        });
+        
+        mainVideoPlayer.addEventListener('loadeddata', function() {
+            console.log('Video data loaded successfully');
+        });
+        
+        mainVideoPlayer.addEventListener('canplay', function() {
+            console.log('Video can play');
+            this.style.filter = 'brightness(1)';
+        });
+        
+        mainVideoPlayer.addEventListener('canplaythrough', function() {
+            console.log('Video can play through');
         });
         
         mainVideoPlayer.addEventListener('canplay', function() {
