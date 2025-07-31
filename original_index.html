@@ -98,48 +98,24 @@
                     <h1 class="hero-title">Why Most Doctors Stay Broke — and How to Break the Cycle</h1>
                     <p class="hero-description">Despite 10+ years of sacrifice while your peers built wealth, most physicians making $300K+ still live paycheck to paycheck. Every month you delay costs you $2,500+ in lost compound growth. Discover the physician-specific wealth system that gets you to financial independence by age 45, not 65.</p>
                     
-                    <div class="video-container" style="display:flex;flex-direction:column;justify-content:center;align-items:center;width:100%;margin:0 auto 30px;">
-                        <!-- Video Position Container - maintains dimensions for absolute positioning -->
-                        <div class="video-position-container" style="position:relative;width:100%;max-width:720px;aspect-ratio:16/9;margin-bottom:20px;">
-                            <!-- Clickable Video Cover Image -->
-                            <div class="video-cover-wrapper" style="cursor:pointer;">
-                                <img
-                                    id="video-cover-image"
-                                    src="./assets/images/Webinarcover.png"
-                                    alt="Click to play video"
-                                    style="width:100%;height:100%;border-radius:20px;box-shadow:0 0 40px 8px rgba(188,167,51,0.7), 0 8px 32px rgba(0,0,0,0.35);border:2px solid #b39b53;object-fit:cover;display:block;background:#000;transition:all 0.3s ease;">
-                                <div class="video-cover-overlay" style="position:absolute;top:0;left:0;width:100%;height:100%;display:flex;justify-content:center;align-items:center;pointer-events:none;border-radius:20px;">
-                                    <div class="play-button" style="display:flex;justify-content:center;align-items:center;transition:transform 0.3s ease;">
-                                        <svg width="72" height="72" viewBox="0 0 72 72" fill="none">
-                                            <circle cx="36" cy="36" r="36" fill="rgba(179, 155, 83, 0.9)"/>
-                                            <path d="M28 22L52 36L28 50V22Z" fill="white"/>
-                                        </svg>
-                                    </div>
+                    <div class="video-container">
+                        <div class="video-wrapper">
+                            <video controls preload="metadata" poster="./assets/images/Webinarcover.png">
+                                <source src="./assets/video/Webinar Second Try.mp4" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                            <div class="video-overlay">
+                                <div class="play-button">
+                                    <svg width="72" height="72" viewBox="0 0 72 72" fill="none">
+                                        <circle cx="36" cy="36" r="36" fill="rgba(179, 155, 83, 0.9)"/>
+                                        <path d="M28 22L52 36L28 50V22Z" fill="white"/>
+                                    </svg>
                                 </div>
-                            </div>
-                            
-                            <!-- Hidden Video Player -->
-                            <div class="video-player-wrapper" id="video-player-wrapper" style="display:none;opacity:0;transition:all 0.5s ease;">
-                                <video
-                                    id="main-video-player"
-                                    controls
-                                    preload="metadata"
-                                    poster="./assets/images/Webinarcover.png"
-                                    style="width:100%;height:100%;border-radius:20px;box-shadow:0 0 40px 8px rgba(188,167,51,0.7), 0 8px 32px rgba(0,0,0,0.35);border:2px solid #b39b53;object-fit:cover;display:block;background:#000;">
-                                    <!-- Primary compressed MP4 source for optimal web performance -->
-                                    <source src="./assets/Videos/0730-compressed.mp4" type="video/mp4">
-                                    <!-- Fallback to original MOV source -->
-                                    <source src="./assets/Videos/0730.mov" type="video/quicktime">
-                                    <!-- Error message for unsupported browsers -->
-                                    <p>Your browser does not support the video tag. Please <a href="./assets/Videos/0730-compressed.mp4" download>download the video</a> to watch it.</p>
-                                </video>
                             </div>
                         </div>
                     </div>
                     
-                    <div style="margin: 50px 0 0; width: 100%; text-align: center;">
-                        <button class="cta-button primary">STOP BEING BROKE WITH A HIGH INCOME</button>
-                    </div>
+                    <button class="cta-button primary">STOP BEING BROKE WITH A HIGH INCOME</button>
                 </div>
             </div>
         </div>

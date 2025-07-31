@@ -352,6 +352,37 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (mainVideoPlayer.paused) {
                         mainVideoPlayer.play().catch(error => {
                             console.log('Auto-play prevented by browser:', error);
+                            
+                            // Show play button overlay if autoplay fails
+                            const playOverlay = document.createElement('div');
+                            playOverlay.style.cssText = `
+                                position: absolute;
+                                top: 50%;
+                                left: 50%;
+                                transform: translate(-50%, -50%);
+                                background: rgba(179, 155, 83, 0.9);
+                                border-radius: 50%;
+                                width: 80px;
+                                height: 80px;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                cursor: pointer;
+                                z-index: 100;
+                                transition: all 0.3s ease;
+                            `;
+                            playOverlay.innerHTML = `
+                                <svg width="32" height="32" viewBox="0 0 32 32" fill="white">
+                                    <path d="M8 6l20 10L8 26V6z"/>
+                                </svg>
+                            `;
+                            
+                            playOverlay.addEventListener('click', () => {
+                                mainVideoPlayer.play();
+                                playOverlay.remove();
+                            });
+                            
+                            videoPlayerWrapper.appendChild(playOverlay);
                         });
                     }
                 }, 50); // Very quick transition for seamless effect
@@ -390,10 +421,41 @@ document.addEventListener('DOMContentLoaded', function() {
             */
         });
         
-        // Error handling for video loading
+        // Enhanced error handling for video loading
         mainVideoPlayer.addEventListener('error', function(e) {
             console.error('Video loading error:', e);
-            // Could show fallback message or retry logic here
+            const videoContainer = this.closest('.video-container');
+            
+            // Show user-friendly error message
+            const errorMessage = document.createElement('div');
+            errorMessage.style.cssText = `
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: rgba(0, 0, 0, 0.8);
+                color: white;
+                padding: 20px;
+                border-radius: 10px;
+                text-align: center;
+                z-index: 100;
+                font-family: Arial, sans-serif;
+            `;
+            errorMessage.innerHTML = `
+                <p>Unable to load video</p>
+                <small>Please check your internet connection and try again</small>
+            `;
+            
+            if (videoContainer) {
+                videoContainer.appendChild(errorMessage);
+                
+                // Remove error message after 5 seconds
+                setTimeout(() => {
+                    if (errorMessage.parentNode) {
+                        errorMessage.parentNode.removeChild(errorMessage);
+                    }
+                }, 5000);
+            }
         });
         
         // Loading state management

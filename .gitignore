@@ -1,12 +1,15 @@
-# Large video files
+# Large video files (exclude most video files but allow our compressed video)
 assets/Video/
-*.mp4
-*.mov
 *.avi
+# Exclude original large files but allow compressed version
+0730.mov
+promo-video.mp4
+# Allow our compressed video file
+!assets/Videos/0730-compressed.mp4
 
 # System files
 .DS_Store
 */.DS_Store
 
-# Video files too large for GitHub
-# Note: Video files should be hosted separately (Vimeo, YouTube, etc.)
+# Note: Large video files should generally be hosted separately (Vimeo, YouTube, etc.)
+# We're using the compressed version (52MB) for direct hosting on GitHub
