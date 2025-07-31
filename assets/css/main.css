@@ -382,6 +382,11 @@ section {
     margin: 0 auto;
     padding: 0 20px;
 }
+.pricing-grid.single-option {
+    justify-content: center;
+    grid-template-columns: 1fr;
+    max-width: 500px;
+}
 
 .pricing-card {
     background: #FFFFFF;
@@ -638,9 +643,21 @@ section {
     gap: 30px;
 }
 
+.footer-logo {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
 .footer-logo img {
     height: 50px;
     width: auto;
+}
+.footer-logo-text {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 2rem;
+    color: #fff;
+    letter-spacing: 1.5px;
+    white-space: nowrap;
 }
 
 .footer-links {

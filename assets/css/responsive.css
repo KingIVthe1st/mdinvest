@@ -167,6 +167,12 @@
         text-align: center;
         gap: 20px;
     }
+    .footer-logo {
+        justify-content: center;
+    }
+    .footer-logo-text {
+        font-size: 1.3rem;
+    }
 
     .footer-links {
         justify-content: center;
