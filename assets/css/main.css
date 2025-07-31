@@ -526,6 +526,7 @@ section {
 .pricing-note {
     font-size: 0.75rem;
     color: #666;
+    margin-top: 24px;
     margin-bottom: 30px;
 }
 
