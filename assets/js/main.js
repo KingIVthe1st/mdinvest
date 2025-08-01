@@ -201,14 +201,15 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('🎯 Form action:', actionUrl);
             console.log('🌐 Site origin:', siteOrigin);
             
-            // Use form action or fallback to root for Netlify Forms
-            let target = '/';  // Default to root for Netlify forms
+            // Use form action or fallback to /index.html for Netlify Forms
+            let target = '/index.html';  // Default to index page for Netlify forms
             if (actionUrl) {
                 try {
                     const u = new URL(actionUrl, siteOrigin);
-                    target = (u.origin === siteOrigin) ? u.pathname : '/';
+                    // Use same-origin path; otherwise keep default /index.html
+                    target = (u.origin === siteOrigin) ? u.pathname : '/index.html';
                 } catch {
-                    target = '/';
+                    target = '/index.html';
                 }
             }
             
