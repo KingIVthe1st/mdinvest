@@ -160,7 +160,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     async function submitLead(e) {
-        // Convert to AJAX Netlify submission (no navigation)
+        // Robust same-origin Netlify AJAX submission
         e.preventDefault();
 
         updateSubmitEnabled();
@@ -188,49 +188,68 @@ document.addEventListener('DOMContentLoaded', function() {
             errorSummaryEl.textContent = '';
         }
 
-        // Helper to url-encode form data
-        const encode = (data) => {
-            return Object.keys(data)
-                .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(data[key]))
-                .join('&');
-        };
-
         try {
-            // Build FormData and ensure Netlify requires form-name field
             const form = formEl;
+            const siteOrigin = window.location.origin;
+            const actionUrl = form.getAttribute('action');
+            let target = '/';
+            if (actionUrl) {
+                try {
+                    const u = new URL(actionUrl, siteOrigin);
+                    target = (u.origin === siteOrigin) ? (u.pathname + u.search) : '/';
+                } catch {
+                    target = '/';
+                }
+            }
+            // Edge cache buster for root submissions
+            if (target === '/') {
+                target = '/?lg=1';
+            }
+
+            // Build FormData from visible form ensuring form-name present and matching form's name
             const formData = new FormData(form);
-            // Ensure "form-name" matches form's name attribute
+            const formName = form.getAttribute('name') || 'lead-gate';
             if (!formData.has('form-name')) {
-                formData.append('form-name', form.getAttribute('name') || 'lead-gate');
+                formData.append('form-name', formName);
+            } else {
+                formData.set('form-name', formName);
             }
 
-            // Build plain object for URL-encoding
-            const payload = {};
+            // Defensive: ensure visible fields are included (names may differ)
+            // We will append canonical names in addition to existing ones so Netlify stores values clearly
+            const fullNameVal = (nameEl && nameEl.value) || '';
+            const emailVal = (emailEl && emailEl.value) || '';
+            const phoneVal = (phoneEl && phoneEl.value) || '';
+            const policyAgreeVal = (consentEl && consentEl.checked) ? 'on' : '';
+            formData.set('fullName', fullNameVal);
+            formData.set('email', emailVal);
+            formData.set('phone', phoneVal);
+            formData.set('policyAgree', policyAgreeVal);
+
+            // Encode to application/x-www-form-urlencoded
+            const encoded = new URLSearchParams();
             for (const [k, v] of formData.entries()) {
-                payload[k] = v;
+                encoded.append(k, v);
             }
 
-            const body = encode(payload);
-
-            const res = await fetch(form.getAttribute('action') || '/', {
+            const res = await fetch(target, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body
+                body: encoded.toString(),
+                mode: 'same-origin',
+                credentials: 'omit',
+                redirect: 'follow'
             });
 
             if (res.ok || res.status === 303) {
                 // Success: persist unlock token/flag and hide overlay, then allow video
                 try {
-                    // Reuse existing token helpers if present
-                    // If no backend token provided (AJAX to Netlify Forms), set a client-side OK token with TTL fallback
                     const ttlDays = leadGate.tokenTtlDaysFallback || 30;
                     const expMs = Date.now() + ttlDays * 24 * 60 * 60 * 1000;
                     setToken('ok', expMs);
-                    // Also store a simple flag in case other code checks it
                     try { localStorage.setItem('mdinvest_lead_gate', 'ok'); } catch {}
                 } catch {}
 
-                // Close overlay and try to reveal/play the video (reuse existing logic)
                 hideOverlay();
 
                 // Reveal video UI if currently hidden
@@ -251,25 +270,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (mainVideoPlayer && mainVideoPlayer.paused) {
                     try { await mainVideoPlayer.play(); } catch {}
                 }
-
-                // Reset button state after success (in case overlay transitions are skipped)
-                submitBtn.disabled = false;
-                submitBtn.classList.remove('is-loading');
-                if (lbl) lbl.textContent = 'Watch Video'; else submitBtn.textContent = 'Watch Video';
-                if (spinner) spinner.style.display = 'none';
-
-                return;
+            } else {
+                // Failure: show explicit status
+                if (errorSummaryEl) {
+                    errorSummaryEl.textContent = `Submission failed (${res.status}). If this persists, please try again later.`;
+                    errorSummaryEl.style.display = 'block';
+                }
             }
-
-            // Non-2xx/303: show error
-            throw new Error('Submission failed with status ' + res.status);
         } catch (err) {
             if (errorSummaryEl) {
-                errorSummaryEl.textContent = 'Something went wrong. Please try again.';
+                errorSummaryEl.textContent = 'Submission error. Please try again.';
                 errorSummaryEl.style.display = 'block';
             }
         } finally {
-            // Always re-enable button and clear loading state
+            // Always reset button UI
             submitBtn.disabled = false;
             submitBtn.classList.remove('is-loading');
             const lbl2 = submitBtn.querySelector('.lg-submit-text');
