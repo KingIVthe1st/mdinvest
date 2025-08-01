@@ -281,6 +281,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.groupEnd();
 
             if (res.ok || res.status === 303) {
+                console.log('✅ Netlify form submission successful');
                 // Success: persist unlock token/flag and hide overlay, then allow video
                 try {
                     const ttlDays = leadGate.tokenTtlDaysFallback || 30;
@@ -310,10 +311,73 @@ document.addEventListener('DOMContentLoaded', function() {
                     try { await mainVideoPlayer.play(); } catch {}
                 }
             } else {
-                // Failure: show explicit status
-                if (errorSummaryEl) {
-                    errorSummaryEl.textContent = `Submission failed (${res.status}). If this persists, please try again later.`;
-                    errorSummaryEl.style.display = 'block';
+                console.log('❌ Netlify form submission failed, attempting fallback API');
+                
+                // FALLBACK: Try the existing API endpoint if Netlify fails
+                try {
+                    const fallbackData = {
+                        name: fullNameVal,
+                        email: emailVal,
+                        phone: phoneVal,
+                        consent: policyAgreeVal === 'on',
+                        source: 'lead-gate-fallback',
+                        utm_source: utms.utm_source,
+                        utm_medium: utms.utm_medium,
+                        utm_campaign: utms.utm_campaign
+                    };
+                    
+                    console.log('🔄 Attempting fallback submission to /api/lead/', fallbackData);
+                    
+                    const fallbackRes = await fetch('/api/lead/', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(fallbackData)
+                    });
+                    
+                    console.log('📡 Fallback response status:', fallbackRes.status);
+                    
+                    if (fallbackRes.ok) {
+                        console.log('✅ Fallback API submission successful');
+                        // Same success handling as Netlify
+                        try {
+                            const ttlDays = leadGate.tokenTtlDaysFallback || 30;
+                            const expMs = Date.now() + ttlDays * 24 * 60 * 60 * 1000;
+                            setToken('ok', expMs);
+                            try { localStorage.setItem('mdinvest_lead_gate', 'ok'); } catch {}
+                        } catch {}
+
+                        hideOverlay();
+
+                        // Reveal video UI
+                        const videoPlayerWrapper = document.getElementById('video-player-wrapper');
+                        const videoCoverWrapper = document.querySelector('.video-cover-wrapper');
+                        const mainVideoPlayer = document.getElementById('main-video-player');
+
+                        if (videoPlayerWrapper) {
+                            videoPlayerWrapper.style.display = 'block';
+                            videoPlayerWrapper.style.opacity = '1';
+                            videoPlayerWrapper.classList.add('show', 'animate-in');
+                        }
+                        if (videoCoverWrapper) {
+                            videoCoverWrapper.classList.add('hidden');
+                            videoCoverWrapper.style.opacity = '0';
+                            videoCoverWrapper.style.transform = 'translateY(-10px)';
+                        }
+                        if (mainVideoPlayer && mainVideoPlayer.paused) {
+                            try { await mainVideoPlayer.play(); } catch {}
+                        }
+                    } else {
+                        console.log('❌ Fallback API also failed');
+                        throw new Error(`Fallback API failed with status ${fallbackRes.status}`);
+                    }
+                } catch (fallbackErr) {
+                    console.error('❌ Both Netlify and fallback API failed:', fallbackErr);
+                    
+                    // Both methods failed: show error message
+                    if (errorSummaryEl) {
+                        errorSummaryEl.textContent = `Submission failed (${res.status}). If this persists, please try again later.`;
+                        errorSummaryEl.style.display = 'block';
+                    }
                 }
             }
         } catch (err) {
