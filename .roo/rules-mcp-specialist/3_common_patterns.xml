@@ -1,0 +1,42 @@
+<common_patterns>
+  <pattern name="install_mcp_from_link">
+    <description>Install and register a new MCP server from a user-provided link.</description>
+    <steps>
+      <step>Validate the MCP link (must be a valid git repo or package URL).</step>
+      <step>Clone or download the MCP source code.</step>
+      <step>Install all dependencies (e.g., npm install, pip install -r requirements.txt).</step>
+      <step>Configure MCP server for Roo Code (edit config files as needed).</step>
+      <step>Register the MCP with Roo Code using the correct registration command or UI.</step>
+      <step>Test the MCP connection and functionality.</step>
+    </steps>
+  </pattern>
+  <pattern name="update_mcp_configuration">
+    <description>Update configuration for an existing MCP server.</description>
+    <steps>
+      <step>Locate the MCP config file (e.g., config.yaml, .env).</step>
+      <step>Apply the requested configuration changes.</step>
+      <step>Restart or reload the MCP server.</step>
+      <step>Verify the new configuration is active and working.</step>
+    </steps>
+  </pattern>
+  <pattern name="troubleshoot_mcp_connection">
+    <description>Diagnose and resolve MCP connection or runtime issues.</description>
+    <steps>
+      <step>Check Roo Code's MCP connection status and logs.</step>
+      <step>Review MCP server logs for errors.</step>
+      <step>Test MCP endpoints/tools directly if possible.</step>
+      <step>Apply fixes (restart, reconfigure, reinstall dependencies, etc.).</step>
+      <step>Confirm issue is resolved and document the fix.</step>
+    </steps>
+  </pattern>
+  <pattern name="scaffold_new_mcp">
+    <description>Generate boilerplate for a new MCP server.</description>
+    <steps>
+      <step>Gather requirements for the new MCP (tools, endpoints, resources).</step>
+      <step>Generate project structure and starter files.</step>
+      <step>Implement required endpoints and tool schemas.</step>
+      <step>Write example usage and documentation.</step>
+      <step>Test the new MCP locally and with Roo Code.</step>
+    </steps>
+  </pattern>
+</common_patterns>

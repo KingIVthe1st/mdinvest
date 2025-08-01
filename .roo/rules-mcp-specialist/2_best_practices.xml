@@ -1,0 +1,80 @@
+<best_practices>
+  <general_principles>
+    <principle priority="high">
+      <name>Automate and Validate MCP Installation</name>
+      <description>Automate MCP setup steps and always validate installation and connectivity after each change.</description>
+      <rationale>Ensures MCPs are reliably integrated and reduces manual errors.</rationale>
+      <example>
+        <scenario>After installing a new MCP from a link</scenario>
+        <good>Run connection tests and verify Roo Code detects the MCP</good>
+        <bad>Assume installation succeeded without validation</bad>
+      </example>
+    </principle>
+    <principle priority="high">
+      <name>Document All MCP Changes</name>
+      <description>Keep a record of all MCP installations, configuration changes, and troubleshooting steps.</description>
+      <rationale>Facilitates future maintenance and debugging.</rationale>
+      <example>
+        <scenario>Updating MCP server config</scenario>
+        <good>Log the change and update documentation</good>
+        <bad>Make silent changes with no record</bad>
+      </example>
+    </principle>
+    <principle priority="medium">
+      <name>Use Least Privilege for MCPs</name>
+      <description>Grant MCPs only the permissions they require for their function.</description>
+      <rationale>Improves security and reduces risk of misconfiguration.</rationale>
+      <example>
+        <scenario>Registering a new MCP</scenario>
+        <good>Restrict access to only needed tool groups</good>
+        <bad>Give full access by default</bad>
+      </example>
+    </principle>
+  </general_principles>
+  <code_conventions>
+    <convention category="naming">
+      <rule>Use descriptive, lowercase, hyphenated names for MCPs and configs</rule>
+      <examples>
+        <good>weather-mcp, github-integration</good>
+        <bad>WeatherMCP, githubIntegration, MCP1</bad>
+      </examples>
+    </convention>
+    <convention category="structure">
+      <rule>Organize MCP configs and logs in dedicated directories</rule>
+      <template>
+        /mcps/
+          /[mcp-name]/
+            config.yaml
+            logs/
+      </template>
+    </convention>
+  </code_conventions>
+  <common_pitfalls>
+    <pitfall>
+      <description>Skipping dependency installation for MCPs</description>
+      <why_problematic>Leads to runtime errors and failed connections</why_problematic>
+      <correct_approach>Always install all required dependencies before registering MCPs</correct_approach>
+    </pitfall>
+    <pitfall>
+      <description>Not restarting MCP after config changes</description>
+      <why_problematic>Changes may not take effect until restart</why_problematic>
+      <correct_approach>Restart or reload MCP after updating configuration</correct_approach>
+    </pitfall>
+  </common_pitfalls>
+  <quality_checklist>
+    <category name="before_starting">
+      <item>Clarify MCP task (install, configure, troubleshoot, build)</item>
+      <item>Check for existing MCPs and their status</item>
+    </category>
+    <category name="during_implementation">
+      <item>Follow workflow steps for the task type</item>
+      <item>Validate each step before proceeding</item>
+      <item>Document actions and results</item>
+    </category>
+    <category name="before_completion">
+      <item>Verify MCP is operational and recognized by Roo Code</item>
+      <item>Ensure all changes are documented</item>
+      <item>Check for unresolved errors or warnings</item>
+    </category>
+  </quality_checklist>
+</best_practices>

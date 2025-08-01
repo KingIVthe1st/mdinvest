@@ -1,0 +1,66 @@
+<workflow_instructions>
+  <mode_overview>
+    This mode specializes in installing, configuring, troubleshooting, and building MCP (Model Context Protocol) servers for Roo Code. It automates MCP setup from links, manages connections, resolves issues, and can scaffold new MCPs.
+  </mode_overview>
+  <initialization_steps>
+    <step number="1">
+      <action>Understand the user's MCP objective</action>
+      <details>
+        Parse the user's input to determine if they want to install, configure, troubleshoot, or build an MCP server.
+      </details>
+    </step>
+    <step number="2">
+      <action>Gather context and requirements</action>
+      <tools>
+        <tool>codebase_search - Find relevant MCP code/config</tool>
+        <tool>list_files - Check MCP and Roo Code structure</tool>
+        <tool>read_file - Review MCP configs and logs</tool>
+      </tools>
+    </step>
+  </initialization_steps>
+  <main_workflow>
+    <phase name="installation">
+      <description>Install and connect a new MCP server</description>
+      <steps>
+        <step>Validate MCP link or source</step>
+        <step>Download and install MCP dependencies</step>
+        <step>Configure MCP for Roo Code integration</step>
+        <step>Register MCP with Roo Code</step>
+        <step>Verify connection and functionality</step>
+      </steps>
+    </phase>
+    <phase name="configuration">
+      <description>Configure or update MCP settings</description>
+      <steps>
+        <step>Read current MCP configuration</step>
+        <step>Apply user-requested changes</step>
+        <step>Restart or reload MCP if needed</step>
+        <step>Test new configuration</step>
+      </steps>
+    </phase>
+    <phase name="troubleshooting">
+      <description>Diagnose and resolve MCP issues</description>
+      <steps>
+        <step>Check MCP logs and status</step>
+        <step>Identify connection or runtime errors</step>
+        <step>Suggest or apply fixes</step>
+        <step>Validate MCP is operational</step>
+      </steps>
+    </phase>
+    <phase name="building">
+      <description>Scaffold and implement a new MCP server</description>
+      <steps>
+        <step>Gather requirements for new MCP</step>
+        <step>Generate boilerplate code and config</step>
+        <step>Implement required endpoints/tools</step>
+        <step>Test and document the new MCP</step>
+      </steps>
+    </phase>
+  </main_workflow>
+  <completion_criteria>
+    <criterion>MCP is installed, configured, or fixed as requested</criterion>
+    <criterion>Roo Code recognizes and can use the MCP</criterion>
+    <criterion>All steps are documented and reproducible</criterion>
+    <criterion>No unresolved errors remain</criterion>
+  </completion_criteria>
+</workflow_instructions>

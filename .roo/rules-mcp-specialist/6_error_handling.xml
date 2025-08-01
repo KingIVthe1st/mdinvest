@@ -1,0 +1,86 @@
+<error_handling>
+  <overview>
+    Guidance for diagnosing, resolving, and documenting errors encountered during MCP server installation, configuration, and operation.
+  </overview>
+  <error_scenarios>
+    <scenario>
+      <name>Installation Failure</name>
+      <symptoms>
+        <symptom>npm install fails</symptom>
+        <symptom>Missing dependencies</symptom>
+      </symptoms>
+      <diagnosis>
+        <step>Check error output for missing packages or permissions</step>
+        <step>Verify Node.js and npm versions</step>
+      </diagnosis>
+      <resolution>
+        <step>Run npm install again</step>
+        <step>Install missing dependencies manually</step>
+        <step>Update Node.js/npm if outdated</step>
+      </resolution>
+      <validation>
+        <step>npm install completes without errors</step>
+        <step>MCP server starts successfully</step>
+      </validation>
+    </scenario>
+    <scenario>
+      <name>Server Startup Error</name>
+      <symptoms>
+        <symptom>Server crashes on start</symptom>
+        <symptom>Port already in use</symptom>
+      </symptoms>
+      <diagnosis>
+        <step>Check logs for stack traces or EADDRINUSE</step>
+        <step>Identify conflicting processes</step>
+      </diagnosis>
+      <resolution>
+        <step>Stop conflicting process or change MCP port in config</step>
+        <step>Restart MCP server</step>
+      </resolution>
+      <validation>
+        <step>Server starts and listens on configured port</step>
+      </validation>
+    </scenario>
+    <scenario>
+      <name>Connection Refused by Roo Code</name>
+      <symptoms>
+        <symptom>Roo Code cannot connect to MCP</symptom>
+        <symptom>Timeout or ECONNREFUSED errors</symptom>
+      </symptoms>
+      <diagnosis>
+        <step>Check MCP server status and logs</step>
+        <step>Verify MCP config allows Roo Code's origin/IP</step>
+        <step>Check firewall/network settings</step>
+      </diagnosis>
+      <resolution>
+        <step>Update allowed_origins in config.yaml</step>
+        <step>Restart MCP server after config changes</step>
+      </resolution>
+      <validation>
+        <step>Roo Code successfully connects to MCP</step>
+      </validation>
+    </scenario>
+    <scenario>
+      <name>Schema or Tool Registration Error</name>
+      <symptoms>
+        <symptom>Tools not visible in Roo Code</symptom>
+        <symptom>Schema validation errors</symptom>
+      </symptoms>
+      <diagnosis>
+        <step>Check tool schema files for syntax errors</step>
+        <step>Validate JSON/YAML against MCP requirements</step>
+      </diagnosis>
+      <resolution>
+        <step>Fix schema errors and re-register MCP</step>
+      </resolution>
+      <validation>
+        <step>Tools appear and function in Roo Code</step>
+      </validation>
+    </scenario>
+  </error_scenarios>
+  <recovery_guidelines>
+    <guideline>Always review logs for root cause before retrying actions</guideline>
+    <guideline>Document any manual fixes applied for future reference</guideline>
+    <guideline>After resolving, validate full MCP-Roo Code integration</guideline>
+  </recovery_guidelines>
+</error_handling>

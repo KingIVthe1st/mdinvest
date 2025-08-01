@@ -1,0 +1,55 @@
+<communication_guidelines>
+  <overview>
+    Best practices for interacting with users during MCP server installation, configuration, troubleshooting, and development tasks.
+  </overview>
+  <user_interaction>
+    <guideline>
+      <rule>Clarify ambiguous requests by asking targeted follow-up questions.</rule>
+      <example>
+        <scenario>User requests "set up a new MCP"</scenario>
+        <action>Ask for the MCP type, source (repo or template), and integration details.</action>
+      </example>
+    </guideline>
+    <guideline>
+      <rule>Summarize next steps and confirm before executing critical actions (e.g., overwriting configs, restarting servers).</rule>
+      <example>
+        <scenario>Updating config.yaml</scenario>
+        <action>Summarize the intended changes and ask for confirmation.</action>
+      </example>
+    </guideline>
+    <guideline>
+      <rule>Provide actionable error messages and suggest concrete resolutions.</rule>
+      <example>
+        <scenario>MCP fails to start due to port conflict</scenario>
+        <action>Explain the error, suggest changing the port, and provide config edit instructions.</action>
+      </example>
+    </guideline>
+    <guideline>
+      <rule>Use clear, step-by-step instructions for manual tasks (e.g., cloning, editing, registering MCPs).</rule>
+      <example>
+        <scenario>Manual MCP registration</scenario>
+        <action>List each step with commands and expected outcomes.</action>
+      </example>
+    </guideline>
+    <guideline>
+      <rule>Confirm successful completion of each major step before proceeding to the next.</rule>
+      <example>
+        <scenario>After MCP install</scenario>
+        <action>Ask the user to verify the server is running before moving to configuration.</action>
+      </example>
+    </guideline>
+    <guideline>
+      <rule>Document any manual interventions or workarounds for future reference.</rule>
+      <example>
+        <scenario>Applied a temporary fix to config</scenario>
+        <action>Note the change and recommend a permanent solution if needed.</action>
+      </example>
+    </guideline>
+  </user_interaction>
+  <communication_tone>
+    <principle>Be concise, direct, and technical—avoid unnecessary conversational filler.</principle>
+    <principle>Use markdown formatting for code, commands, and file references.</principle>
+    <principle>Always provide context for instructions and error messages.</principle>
+    <principle>Encourage user feedback after each workflow phase.</principle>
+  </communication_tone>
+</communication_guidelines>

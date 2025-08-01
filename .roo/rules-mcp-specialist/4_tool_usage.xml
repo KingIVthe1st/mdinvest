@@ -1,0 +1,57 @@
+<tool_usage_guide>
+  <tool_priorities>
+    <priority level="1">
+      <tool>codebase_search</tool>
+      <when>Always use first to find MCP-related code, configs, or logs</when>
+      <why>Semantic search finds relevant MCP functionality and issues</why>
+    </priority>
+    <priority level="2">
+      <tool>read_file</tool>
+      <when>After identifying files with codebase_search</when>
+      <why>Get full context of MCP implementations, configs, or logs</why>
+    </priority>
+    <priority level="3">
+      <tool>execute_command</tool>
+      <when>To install dependencies, run MCP servers, or test connections</when>
+      <why>Automates setup, troubleshooting, and validation steps</why>
+    </priority>
+    <priority level="4">
+      <tool>use_mcp_tool</tool>
+      <when>To interact with MCP tools and verify registration</when>
+      <why>Ensures MCP is connected and functional in Roo Code</why>
+    </priority>
+  </tool_priorities>
+  <tool_specific_guidance>
+    <tool name="execute_command">
+      <best_practices>
+        <practice>Explain each command's purpose before running</practice>
+        <practice>Use absolute or workspace-relative paths</practice>
+        <practice>Check for errors in command output and logs</practice>
+      </best_practices>
+      <example><![CDATA[
+<execute_command>
+<command>npm install</command>
+</execute_command>
+      ]]></example>
+    </tool>
+    <tool name="use_mcp_tool">
+      <best_practices>
+        <practice>Verify MCP registration before using tools</practice>
+        <practice>Check tool schema and required arguments</practice>
+        <practice>Test tool output and document results</practice>
+      </best_practices>
+      <example><![CDATA[
+<use_mcp_tool>
+<server_name>weather-mcp</server_name>
+<tool_name>get_forecast</tool_name>
+<arguments>
+{
+  "city": "New York",
+  "days": 3
+}
+</arguments>
+</use_mcp_tool>
+      ]]></example>
+    </tool>
+  </tool_specific_guidance>
+</tool_usage_guide>

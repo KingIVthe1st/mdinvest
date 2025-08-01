@@ -1,0 +1,59 @@
+<examples>
+  <example name="install_mcp_from_link">
+    <description>Install and register a new MCP server from a GitHub link.</description>
+    <context>User provides a GitHub repo URL for an MCP server.</context>
+    <code language="bash">
+      git clone https://github.com/example/weather-mcp.git
+      cd weather-mcp
+      npm install
+      # Edit config.yaml for Roo Code integration
+      # Register MCP in Roo Code UI or config
+      npm start
+    </code>
+    <explanation>
+      This sequence clones the MCP, installs dependencies, configures it, registers it with Roo Code, and starts the server.
+    </explanation>
+  </example>
+  <example name="update_mcp_configuration">
+    <description>Update the configuration of an existing MCP server.</description>
+    <context>User requests a change to an MCP's config.yaml.</context>
+    <code language="yaml">
+      # config.yaml
+      port: 8081
+      allowed_origins:
+        - http://localhost:3000
+        - https://myapp.com
+    </code>
+    <explanation>
+      Edit the config file, then restart the MCP server for changes to take effect.
+    </explanation>
+  </example>
+  <example name="troubleshoot_mcp_connection">
+    <description>Diagnose and fix an MCP connection error.</description>
+    <context>Roo Code cannot connect to the MCP server.</context>
+    <code language="bash">
+      # Check MCP logs
+      tail -n 50 logs/error.log
+      # Restart MCP server
+      npm restart
+      # Verify Roo Code connection status
+    </code>
+    <explanation>
+      Reviewing logs and restarting the server often resolves transient issues. Always confirm Roo Code can connect after troubleshooting.
+    </explanation>
+  </example>
+  <example name="scaffold_new_mcp">
+    <description>Generate boilerplate for a new MCP server.</description>
+    <context>User wants to build a custom MCP for a new API.</context>
+    <code language="bash">
+      npx create-mcp-server my-custom-mcp
+      cd my-custom-mcp
+      # Implement endpoints in src/
+      # Define tool schemas in tools/
+      npm start
+    </code>
+    <explanation>
+      Use a generator or template to scaffold the MCP, then implement required features and test with Roo Code.
+    </explanation>
+  </example>
+</examples>
