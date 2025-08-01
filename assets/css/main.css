@@ -21,6 +21,174 @@ body {
     overflow-x: hidden;
 }
 
+/* Lead Gate Overlay */
+#lead-gate-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+}
+
+.lead-gate-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  backdrop-filter: saturate(120%) blur(2px);
+}
+
+.lead-gate-container {
+  position: relative;
+  max-width: 560px;
+  margin: 6vh auto;
+  background: #0f1115;
+  border: 2px solid #2563eb;
+  border-radius: 16px;
+  padding: 24px 20px;
+  box-shadow: 0 20px 70px rgba(0,0,0,0.55);
+}
+
+.lead-gate-title {
+  font-family: 'Bebas Neue', cursive;
+  font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+  letter-spacing: 1px;
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+.lead-gate-subtitle {
+  text-align: center;
+  color: rgba(255,255,255,0.85);
+  margin-bottom: 16px;
+  font-size: 1rem;
+}
+
+.lead-gate-error-summary {
+  background: rgba(220, 38, 38, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.6);
+  color: #fecaca;
+  padding: 10px 12px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  display: none;
+  font-size: 0.95rem;
+}
+
+.lead-gate-field {
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.lead-gate-field label {
+  font-size: 0.95rem;
+  color: #e5e7eb;
+}
+
+.lead-gate-field input[type="text"],
+.lead-gate-field input[type="email"],
+.lead-gate-field input[type="tel"] {
+  background: #0b0d12;
+  color: #fff;
+  border: 1px solid #374151;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+.lead-gate-field input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.25);
+}
+
+.lead-gate-field-error {
+  color: #fca5a5;
+  font-size: 0.85rem;
+  min-height: 1em;
+}
+
+.lead-gate-consent {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin: 8px 0 4px;
+  color: #e5e7eb;
+  font-size: 0.95rem;
+}
+
+.lead-gate-consent a {
+  color: #60a5fa;
+  text-decoration: underline;
+}
+
+.lead-gate-captcha {
+  margin: 8px 0 4px;
+}
+
+.lead-gate-submit {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-family: 'Bebas Neue', cursive;
+  font-size: 1.4rem;
+  letter-spacing: 0.5px;
+  padding: 14px 18px;
+  background: linear-gradient(180deg, #2563eb 0%, #1e40af 100%);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 6px;
+}
+
+.lead-gate-submit[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.lg-submit-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  display: none;
+  animation: lgspin .8s linear infinite;
+}
+
+@keyframes lgspin {
+  to { transform: rotate(360deg); }
+}
+
+.lead-gate-privacy-note {
+  margin-top: 10px;
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.8);
+  text-align: center;
+}
+
+/* Prevent background interaction when overlay is visible */
+body.lead-gate-open {
+  overflow: hidden;
+}
+
+/* Mobile adjustments */
+@media (max-width: 600px) {
+  .lead-gate-container {
+    margin: 0;
+    min-height: 100vh;
+    border-radius: 0;
+    padding: 20px 16px 28px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+}
+
 /* Typography */
 h1, h2, h3, h4, h5, h6 {
     font-family: 'Bebas Neue', cursive;

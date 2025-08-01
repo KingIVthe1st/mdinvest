@@ -3,6 +3,287 @@
 
 document.addEventListener('DOMContentLoaded', function() {
     
+    // Lead Gate Config
+    const leadGate = {
+        enableGate: true,
+        captchaEnabled: false, // feature flag
+        endpoint: '/api/lead',
+        tokenKey: 'gateToken',
+        clientIdKey: 'leadClientId',
+        policyUrl: 'https://themdinvestor.com/privacy',
+        tokenTtlDaysFallback: 30
+    };
+
+    // Token helpers
+    function setToken(token, expiresAt) {
+        try {
+            localStorage.setItem(leadGate.tokenKey, token);
+            if (expiresAt) localStorage.setItem(leadGate.tokenKey + ':exp', String(new Date(expiresAt).getTime()));
+        } catch {}
+    }
+    function getToken() {
+        try { return localStorage.getItem(leadGate.tokenKey) || ''; } catch { return ''; }
+    }
+    function getTokenExpMs() {
+        try { return parseInt(localStorage.getItem(leadGate.tokenKey + ':exp') || '0', 10) || 0; } catch { return 0; }
+    }
+    function clearToken() {
+        try {
+            localStorage.removeItem(leadGate.tokenKey);
+            localStorage.removeItem(leadGate.tokenKey + ':exp');
+        } catch {}
+    }
+    function isTokenValidForDomain() {
+        const exp = getTokenExpMs();
+        if (!exp) return false;
+        const now = Date.now();
+        return exp > now;
+    }
+
+    // ClientId
+    function getOrCreateClientId() {
+        try {
+            let cid = localStorage.getItem(leadGate.clientIdKey);
+            if (!cid) {
+                cid = crypto && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2) + Date.now();
+                localStorage.setItem(leadGate.clientIdKey, cid);
+            }
+            return cid;
+        } catch {
+            return Math.random().toString(36).slice(2) + Date.now();
+        }
+    }
+
+    // UTM & source capture
+    function parseUTMs() {
+        const params = new URLSearchParams(location.search);
+        const get = (k) => params.get(k) || '';
+        return {
+            utm_source: get('utm_source'),
+            utm_medium: get('utm_medium'),
+            utm_campaign: get('utm_campaign'),
+            utm_term: get('utm_term'),
+            utm_content: get('utm_content'),
+        };
+    }
+    const utms = parseUTMs();
+    const source_path = location.pathname + (location.search || '');
+
+    // Overlay control
+    const overlayEl = document.getElementById('lead-gate-overlay');
+    const formEl = document.getElementById('lead-gate-form');
+    const submitBtn = document.getElementById('lg-submit');
+    const nameEl = document.getElementById('lg-name');
+    const emailEl = document.getElementById('lg-email');
+    const phoneEl = document.getElementById('lg-phone');
+    const consentEl = document.getElementById('lg-consent');
+    const hpEl = document.getElementById('lg-hp');
+    const errorSummaryEl = document.getElementById('lead-gate-error-summary');
+
+    function showOverlay() {
+        if (!overlayEl) return;
+        overlayEl.style.display = 'block';
+        document.body.classList.add('lead-gate-open');
+        // Focus first field
+        setTimeout(() => nameEl && nameEl.focus(), 50);
+    }
+    function hideOverlay() {
+        if (!overlayEl) return;
+        overlayEl.style.display = 'none';
+        document.body.classList.remove('lead-gate-open');
+        const playBtn = document.querySelector('.video-cover-wrapper');
+        if (playBtn) playBtn.focus();
+    }
+
+    // Validation helpers
+    function setFieldError(el, msg) {
+        if (!el) return;
+        const id = el.getAttribute('id');
+        const errEl = document.getElementById(id + '-err');
+        if (errEl) errEl.textContent = msg || '';
+    }
+    function validateName(v) {
+        const s = (v || '').trim();
+        if (s.length < 2) return 'Please enter your full name';
+        if (s.length > 100) return 'Name is too long';
+        return '';
+    }
+    function validateEmail(v) {
+        const s = (v || '').trim().toLowerCase();
+        if (!s) return 'Email is required';
+        // RFC5322-lite
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
+        if (!re.test(s)) return 'Enter a valid email';
+        if (s.length > 254) return 'Email is too long';
+        return '';
+    }
+    function normalizePhone(v) {
+        return (v || '').replace(/\D+/g, '').slice(0, 32);
+    }
+    function validatePhone(v) {
+        const d = normalizePhone(v);
+        if (d.length < 7) return 'Enter a valid phone number';
+        return '';
+    }
+
+    function updateSubmitEnabled() {
+        const nameErr = validateName(nameEl.value);
+        const emailErr = validateEmail(emailEl.value);
+        const phoneErr = validatePhone(phoneEl.value);
+        const consentErr = consentEl.checked ? '' : 'You must agree to continue';
+        const hpTripped = (hpEl.value || '').trim().length > 0;
+        // Mirror errors in summary for accessibility if any
+        const errs = [nameErr, emailErr, phoneErr, consentErr].filter(Boolean);
+        if (errs.length) {
+            errorSummaryEl.textContent = errs[0];
+            errorSummaryEl.style.display = 'block';
+        } else {
+            errorSummaryEl.style.display = 'none';
+            errorSummaryEl.textContent = '';
+        }
+
+        setFieldError(nameEl, nameErr);
+        setFieldError(emailEl, emailErr);
+        setFieldError(phoneEl, phoneErr);
+        setFieldError(consentEl, '');
+        errorSummaryEl.style.display = 'none';
+        errorSummaryEl.textContent = '';
+
+        const ok = !nameErr && !emailErr && !phoneErr && !consentErr && !hpTripped;
+        submitBtn.disabled = !ok;
+    }
+
+    if (formEl) {
+        ['input','change','blur','keyup'].forEach(evt => {
+            formEl.addEventListener(evt, updateSubmitEnabled);
+        });
+    }
+
+    async function submitLead(e) {
+        e.preventDefault();
+        updateSubmitEnabled();
+        if (submitBtn.disabled) return;
+
+        // Honeypot
+        if ((hpEl.value || '').trim()) {
+            errorSummaryEl.textContent = 'Validation error. Please check your inputs.';
+            errorSummaryEl.style.display = 'block';
+            return;
+        }
+
+        const payload = {
+            name: nameEl.value.trim(),
+            email: emailEl.value.trim().toLowerCase(),
+            phone: normalizePhone(phoneEl.value),
+            consent: !!consentEl.checked,
+            clientId: getOrCreateClientId(),
+            ...utms,
+            source_path
+        };
+
+        // UI loading
+        submitBtn.disabled = true;
+        submitBtn.querySelector('.lg-submit-text').textContent = 'Processing...';
+        const spinner = submitBtn.querySelector('.lg-submit-spinner');
+        if (spinner) spinner.style.display = 'inline-block';
+
+        try {
+            const res = await fetch(leadGate.endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+                credentials: 'omit',
+                cache: 'no-store',
+            });
+
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}));
+                const code = data?.error?.code || 'server_error';
+                errorSummaryEl.textContent = code === 'validation_error'
+                  ? (data?.error?.message || 'Please correct the highlighted errors.')
+                  : code === 'rate_limited'
+                    ? 'Too many attempts. Please try again later.'
+                    : 'Something went wrong. Please try again.';
+                errorSummaryEl.style.display = 'block';
+                return;
+            }
+
+            const { token, expiresAt } = await res.json();
+            setToken(token, expiresAt);
+            hideOverlay();
+
+        } catch (err) {
+            errorSummaryEl.textContent = 'Network error. Please try again.';
+            errorSummaryEl.style.display = 'block';
+        } finally {
+            submitBtn.querySelector('.lg-submit-text').textContent = 'Watch Video';
+            if (spinner) spinner.style.display = 'none';
+            updateSubmitEnabled();
+        }
+    }
+
+    if (formEl) {
+        formEl.addEventListener('submit', submitLead);
+    }
+
+    function gateVideoIfNeeded() {
+        if (!leadGate.enableGate) return;
+        // If token valid, do nothing
+        const t = getToken();
+        if (t && isTokenValidForDomain()) {
+            return;
+        }
+        // Otherwise show overlay and block interactions
+        showOverlay();
+        // Also pause/hide video if it was visible via any race
+        const mainVideoPlayer = document.getElementById('main-video-player');
+        const videoPlayerWrapper = document.getElementById('video-player-wrapper');
+        const videoCoverWrapper = document.querySelector('.video-cover-wrapper');
+        if (mainVideoPlayer && !mainVideoPlayer.paused) {
+            try { mainVideoPlayer.pause(); } catch {}
+        }
+        if (videoPlayerWrapper) {
+            videoPlayerWrapper.style.display = 'none';
+            videoPlayerWrapper.classList.remove('show', 'animate-in');
+        }
+        if (videoCoverWrapper) {
+            videoCoverWrapper.classList.remove('hidden');
+            videoCoverWrapper.style.opacity = '1';
+            videoCoverWrapper.style.transform = 'translateY(0)';
+        }
+    }
+
+    // Utility for adding/updating hidden inputs before Netlify submit
+    function ensureHiddenField(form, name, value) {
+        let el = form.querySelector(`input[name="${name}"]`);
+        if (!el) {
+            el = document.createElement('input');
+            el.type = 'hidden';
+            el.name = name;
+            form.appendChild(el);
+        }
+        el.value = value || '';
+    }
+
+    // Gate video cover interaction: if not passed gate, clicking cover opens overlay instead of playing
+    function attachGateToVideoCover() {
+        const videoCoverWrapper = document.querySelector('.video-cover-wrapper');
+        if (!videoCoverWrapper) return;
+        videoCoverWrapper.addEventListener('click', function(e) {
+            if (!leadGate.enableGate) return; // allow normal flow
+            const t = getToken();
+            const valid = t && isTokenValidForDomain();
+            if (!valid) {
+                e.preventDefault();
+                e.stopPropagation();
+                showOverlay();
+            }
+        }, true);
+    }
+
+    // Ensure overlay blocks initial video click → overlay will capture attention
+    attachGateToVideoCover();
+    gateVideoIfNeeded();
     // Performance optimization utilities
     const performanceUtils = {
         rafId: null,

@@ -632,6 +632,58 @@
         </div>
     </footer>
 
+    <!-- Opt-in Overlay Modal -->
+    <div id="lead-gate-overlay" role="dialog" aria-modal="true" aria-labelledby="lead-gate-title" style="display:none;">
+      <div class="lead-gate-backdrop" aria-hidden="true"></div>
+      <div class="lead-gate-container" role="document">
+        <h2 id="lead-gate-title" class="lead-gate-title">Watch the Training — Enter Your Info to Continue</h2>
+        <p class="lead-gate-subtitle">Enter your details to access the video. No spam. Unsubscribe anytime.</p>
+
+        <div id="lead-gate-error-summary" class="lead-gate-error-summary" aria-live="polite"></div>
+
+        <!-- Netlify Forms enabled: data-netlify, name, hidden form-name, honeypot -->
+        <form id="lead-gate-form" name="Lead Optin" method="POST" data-netlify="true" netlify-honeypot="company" novalidate>
+          <input type="hidden" name="form-name" value="Lead Optin">
+          <!-- Honeypot (bot trap) -->
+          <input type="text" name="company" id="lg-hp" tabindex="-1" autocomplete="off" aria-hidden="true" class="lead-gate-honeypot">
+
+          <div class="lead-gate-field">
+            <label for="lg-name">Full Name</label>
+            <input id="lg-name" name="name" type="text" inputmode="text" autocomplete="name" required aria-describedby="lg-name-err">
+            <div id="lg-name-err" class="lead-gate-field-error"></div>
+          </div>
+
+          <div class="lead-gate-field">
+            <label for="lg-email">Email</label>
+            <input id="lg-email" name="email" type="email" inputmode="email" autocomplete="email" required aria-describedby="lg-email-err">
+            <div id="lg-email-err" class="lead-gate-field-error"></div>
+          </div>
+
+          <div class="lead-gate-field">
+            <label for="lg-phone">Phone</label>
+            <input id="lg-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" required aria-describedby="lg-phone-err" placeholder="(555) 555-5555">
+            <div id="lg-phone-err" class="lead-gate-field-error"></div>
+          </div>
+
+          <div class="lead-gate-consent">
+            <input id="lg-consent" name="consent" type="checkbox" required aria-describedby="lg-consent-err">
+            <label for="lg-consent">I agree to the <a href="https://themdinvestor.com/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.</label>
+          </div>
+          <div id="lg-consent-err" class="lead-gate-field-error"></div>
+
+          <!-- Optional CAPTCHA container (hidden/feature-flagged by JS) -->
+          <div id="lg-captcha-container" class="lead-gate-captcha" style="display:none;"></div>
+
+          <button type="submit" id="lg-submit" class="lead-gate-submit" disabled data-netlify-submit="">
+            <span class="lg-submit-text">Watch Video</span>
+            <span class="lg-submit-spinner" aria-hidden="true"></span>
+          </button>
+
+          <p class="lead-gate-privacy-note">We’ll send occasional updates related to this training. You can unsubscribe anytime.</p>
+        </form>
+      </div>
+    </div>
+
     <!-- JavaScript -->
     <script src="./assets/js/main.js"></script>
 <style>

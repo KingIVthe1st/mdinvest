@@ -69,6 +69,16 @@
     }
 }
 
+/* Lead Gate responsive tweaks */
+@media (max-width: 768px) {
+  .lead-gate-title {
+    font-size: 2rem;
+  }
+  .lead-gate-subtitle {
+    font-size: 0.95rem;
+  }
+}
+
 /* Mobile Styles */
 @media (max-width: 768px) {
     .container {
