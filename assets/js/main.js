@@ -194,6 +194,13 @@ document.addEventListener('DOMContentLoaded', function() {
             const currentUrl = window.location.href;
             const actionUrl = form.getAttribute('action');
             
+            // DIAGNOSTIC LOGGING - Form Setup Analysis
+            console.group('🔍 FORM SUBMISSION DIAGNOSTIC');
+            console.log('📍 Current URL:', currentUrl);
+            console.log('📋 Form name:', form.getAttribute('name'));
+            console.log('🎯 Form action:', actionUrl);
+            console.log('🌐 Site origin:', siteOrigin);
+            
             // Use current page URL instead of root for Netlify Forms
             let target = currentUrl;
             if (actionUrl) {
@@ -204,6 +211,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     target = currentUrl;
                 }
             }
+            console.log('🎯 Final target URL:', target);
 
             // Build FormData from visible form ensuring form-name present and matching form's name
             const formData = new FormData(form);
@@ -214,11 +222,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 formData.set('form-name', formName);
             }
 
-            // Use the actual field names from the visible form, not mapped names
+            // DIAGNOSTIC LOGGING - Field Values Analysis
             const fullNameVal = (nameEl && nameEl.value) || '';
             const emailVal = (emailEl && emailEl.value) || '';
             const phoneVal = (phoneEl && phoneEl.value) || '';
             const policyAgreeVal = (consentEl && consentEl.checked) ? 'on' : '';
+            
+            console.log('📝 Form field values:');
+            console.log('  - Full Name:', fullNameVal);
+            console.log('  - Email:', emailVal);
+            console.log('  - Phone:', phoneVal);
+            console.log('  - Consent:', policyAgreeVal);
+            
+            // DIAGNOSTIC LOGGING - Field Name Mismatch Detection
+            console.log('⚠️ FIELD NAME ANALYSIS:');
+            console.log('  Hidden form expects: fullName, email, phone, policyAgree');
+            console.log('  Visible form provides: name, email, phone, consent');
+            console.log('  🔴 MISMATCH DETECTED: name vs fullName, consent vs policyAgree');
             
             // Keep original field names to match visible form
             formData.set('name', fullNameVal);
@@ -226,11 +246,21 @@ document.addEventListener('DOMContentLoaded', function() {
             formData.set('phone', phoneVal);
             formData.set('consent', policyAgreeVal);
 
+            // DIAGNOSTIC LOGGING - FormData Contents
+            console.log('📦 FormData contents being sent:');
+            for (const [key, value] of formData.entries()) {
+                console.log(`  - ${key}: ${value}`);
+            }
+
             // Encode to application/x-www-form-urlencoded
             const encoded = new URLSearchParams();
             for (const [k, v] of formData.entries()) {
                 encoded.append(k, v);
             }
+            
+            console.log('📤 Encoded body:', encoded.toString());
+            console.log('🚀 Submitting to:', target);
+            console.groupEnd();
 
             const res = await fetch(target, {
                 method: 'POST',
@@ -240,6 +270,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 credentials: 'omit',
                 redirect: 'follow'
             });
+            
+            // DIAGNOSTIC LOGGING - Response Analysis
+            console.group('📡 RESPONSE ANALYSIS');
+            console.log('🎯 Response status:', res.status);
+            console.log('📊 Response headers:', Object.fromEntries(res.headers.entries()));
+            console.log('✅ Response OK:', res.ok);
+            console.log('🔀 Response redirected:', res.redirected);
+            console.log('🌐 Response URL:', res.url);
+            console.groupEnd();
 
             if (res.ok || res.status === 303) {
                 // Success: persist unlock token/flag and hide overlay, then allow video
