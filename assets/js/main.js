@@ -201,17 +201,22 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('🎯 Form action:', actionUrl);
             console.log('🌐 Site origin:', siteOrigin);
             
-            // Use current page URL instead of root for Netlify Forms
-            let target = currentUrl;
+            // Use form action or fallback to root for Netlify Forms
+            let target = '/';  // Default to root for Netlify forms
             if (actionUrl) {
                 try {
                     const u = new URL(actionUrl, siteOrigin);
-                    target = (u.origin === siteOrigin) ? u.href : currentUrl;
+                    target = (u.origin === siteOrigin) ? u.pathname : '/';
                 } catch {
-                    target = currentUrl;
+                    target = '/';
                 }
             }
-            console.log('🎯 Final target URL:', target);
+            
+            // Convert to full URL for fetch
+            const fullTargetUrl = new URL(target, siteOrigin).href;
+            console.log('🎯 Form action:', actionUrl);
+            console.log('🎯 Target path:', target);
+            console.log('🎯 Full target URL:', fullTargetUrl);
 
             // Build FormData from visible form ensuring form-name present and matching form's name
             const formData = new FormData(form);
@@ -259,10 +264,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             console.log('📤 Encoded body:', encoded.toString());
-            console.log('🚀 Submitting to:', target);
+            console.log('🚀 Submitting to:', fullTargetUrl);
             console.groupEnd();
 
-            const res = await fetch(target, {
+            const res = await fetch(fullTargetUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: encoded.toString(),
