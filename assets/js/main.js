@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const leadGate = {
         enableGate: true,
         captchaEnabled: false, // feature flag
-        endpoint: '/api/lead',
+        endpoint: null,
         tokenKey: 'gateToken',
         clientIdKey: 'leadClientId',
         policyUrl: 'https://themdinvestor.com/privacy',
@@ -160,69 +160,131 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     async function submitLead(e) {
+        // Convert to AJAX Netlify submission (no navigation)
         e.preventDefault();
+
         updateSubmitEnabled();
         if (submitBtn.disabled) return;
 
-        // Honeypot
+        // Honeypot check: block client-side if tripped
         if ((hpEl.value || '').trim()) {
-            errorSummaryEl.textContent = 'Validation error. Please check your inputs.';
-            errorSummaryEl.style.display = 'block';
+            if (errorSummaryEl) {
+                errorSummaryEl.textContent = 'Validation error. Please check your inputs.';
+                errorSummaryEl.style.display = 'block';
+            }
             return;
         }
 
-        const payload = {
-            name: nameEl.value.trim(),
-            email: emailEl.value.trim().toLowerCase(),
-            phone: normalizePhone(phoneEl.value),
-            consent: !!consentEl.checked,
-            clientId: getOrCreateClientId(),
-            ...utms,
-            source_path
-        };
-
-        // UI loading
+        // UI: start loading
         submitBtn.disabled = true;
-        submitBtn.querySelector('.lg-submit-text').textContent = 'Processing...';
+        submitBtn.classList.add('is-loading');
+        const lbl = submitBtn.querySelector('.lg-submit-text');
+        if (lbl) lbl.textContent = 'Processing...'; else submitBtn.textContent = 'Processing...';
         const spinner = submitBtn.querySelector('.lg-submit-spinner');
         if (spinner) spinner.style.display = 'inline-block';
 
+        if (errorSummaryEl) {
+            errorSummaryEl.style.display = 'none';
+            errorSummaryEl.textContent = '';
+        }
+
+        // Helper to url-encode form data
+        const encode = (data) => {
+            return Object.keys(data)
+                .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(data[key]))
+                .join('&');
+        };
+
         try {
-            const res = await fetch(leadGate.endpoint, {
+            // Build FormData and ensure Netlify requires form-name field
+            const form = formEl;
+            const formData = new FormData(form);
+            // Ensure "form-name" matches form's name attribute
+            if (!formData.has('form-name')) {
+                formData.append('form-name', form.getAttribute('name') || 'lead-gate');
+            }
+
+            // Build plain object for URL-encoding
+            const payload = {};
+            for (const [k, v] of formData.entries()) {
+                payload[k] = v;
+            }
+
+            const body = encode(payload);
+
+            const res = await fetch(form.getAttribute('action') || '/', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload),
-                credentials: 'omit',
-                cache: 'no-store',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body
             });
 
-            if (!res.ok) {
-                const data = await res.json().catch(() => ({}));
-                const code = data?.error?.code || 'server_error';
-                errorSummaryEl.textContent = code === 'validation_error'
-                  ? (data?.error?.message || 'Please correct the highlighted errors.')
-                  : code === 'rate_limited'
-                    ? 'Too many attempts. Please try again later.'
-                    : 'Something went wrong. Please try again.';
-                errorSummaryEl.style.display = 'block';
+            if (res.ok || res.status === 303) {
+                // Success: persist unlock token/flag and hide overlay, then allow video
+                try {
+                    // Reuse existing token helpers if present
+                    // If no backend token provided (AJAX to Netlify Forms), set a client-side OK token with TTL fallback
+                    const ttlDays = leadGate.tokenTtlDaysFallback || 30;
+                    const expMs = Date.now() + ttlDays * 24 * 60 * 60 * 1000;
+                    setToken('ok', expMs);
+                    // Also store a simple flag in case other code checks it
+                    try { localStorage.setItem('mdinvest_lead_gate', 'ok'); } catch {}
+                } catch {}
+
+                // Close overlay and try to reveal/play the video (reuse existing logic)
+                hideOverlay();
+
+                // Reveal video UI if currently hidden
+                const videoPlayerWrapper = document.getElementById('video-player-wrapper');
+                const videoCoverWrapper = document.querySelector('.video-cover-wrapper');
+                const mainVideoPlayer = document.getElementById('main-video-player');
+
+                if (videoPlayerWrapper) {
+                    videoPlayerWrapper.style.display = 'block';
+                    videoPlayerWrapper.style.opacity = '1';
+                    videoPlayerWrapper.classList.add('show', 'animate-in');
+                }
+                if (videoCoverWrapper) {
+                    videoCoverWrapper.classList.add('hidden');
+                    videoCoverWrapper.style.opacity = '0';
+                    videoCoverWrapper.style.transform = 'translateY(-10px)';
+                }
+                if (mainVideoPlayer && mainVideoPlayer.paused) {
+                    try { await mainVideoPlayer.play(); } catch {}
+                }
+
+                // Reset button state after success (in case overlay transitions are skipped)
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('is-loading');
+                if (lbl) lbl.textContent = 'Watch Video'; else submitBtn.textContent = 'Watch Video';
+                if (spinner) spinner.style.display = 'none';
+
                 return;
             }
 
-            const { token, expiresAt } = await res.json();
-            setToken(token, expiresAt);
-            hideOverlay();
-
+            // Non-2xx/303: show error
+            throw new Error('Submission failed with status ' + res.status);
         } catch (err) {
-            errorSummaryEl.textContent = 'Network error. Please try again.';
-            errorSummaryEl.style.display = 'block';
+            if (errorSummaryEl) {
+                errorSummaryEl.textContent = 'Something went wrong. Please try again.';
+                errorSummaryEl.style.display = 'block';
+            }
         } finally {
-            submitBtn.querySelector('.lg-submit-text').textContent = 'Watch Video';
-            if (spinner) spinner.style.display = 'none';
-            updateSubmitEnabled();
+            // Always re-enable button and clear loading state
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('is-loading');
+            const lbl2 = submitBtn.querySelector('.lg-submit-text');
+            if (lbl2) lbl2.textContent = 'Watch Video'; else submitBtn.textContent = 'Watch Video';
+            const spinner2 = submitBtn.querySelector('.lg-submit-spinner');
+            if (spinner2) spinner2.style.display = 'none';
         }
     }
 
     if (formEl) {
+        // Ensure error summary hidden on load
+        if (errorSummaryEl) {
+            errorSummaryEl.style.display = 'none';
+            errorSummaryEl.textContent = '';
+        }
         formEl.addEventListener('submit', submitLead);
     }
 
@@ -251,6 +313,18 @@ document.addEventListener('DOMContentLoaded', function() {
             videoCoverWrapper.style.opacity = '1';
             videoCoverWrapper.style.transform = 'translateY(0)';
         }
+    }
+
+    // Utility for adding/updating hidden inputs before Netlify submit
+    function ensureHiddenField(form, name, value) {
+        let el = form.querySelector(`input[name="${name}"]`);
+        if (!el) {
+            el = document.createElement('input');
+            el.type = 'hidden';
+            el.name = name;
+            form.appendChild(el);
+        }
+        el.value = value || '';
     }
 
     // Utility for adding/updating hidden inputs before Netlify submit

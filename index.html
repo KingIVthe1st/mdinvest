@@ -642,8 +642,8 @@
         <div id="lead-gate-error-summary" class="lead-gate-error-summary" aria-live="polite"></div>
 
         <!-- Netlify Forms enabled: data-netlify, name, hidden form-name, honeypot -->
-        <form id="lead-gate-form" name="Lead Optin" method="POST" data-netlify="true" netlify-honeypot="company" novalidate>
-          <input type="hidden" name="form-name" value="Lead Optin">
+        <form id="lead-gate-form" name="lead-gate" method="POST" data-netlify="true" netlify-honeypot="company" novalidate>
+          <input type="hidden" name="form-name" value="lead-gate">
           <!-- Honeypot (bot trap) -->
           <input type="text" name="company" id="lg-hp" tabindex="-1" autocomplete="off" aria-hidden="true" class="lead-gate-honeypot">
 
@@ -685,7 +685,7 @@
     </div>
 
     <!-- JavaScript -->
-    <script src="./assets/js/main.js"></script>
+    <script src="./assets/js/main.js?v=3"></script>
 <style>
 html {
   scroll-behavior: smooth;
