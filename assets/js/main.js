@@ -191,19 +191,18 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             const form = formEl;
             const siteOrigin = window.location.origin;
+            const currentUrl = window.location.href;
             const actionUrl = form.getAttribute('action');
-            let target = '/';
+            
+            // Use current page URL instead of root for Netlify Forms
+            let target = currentUrl;
             if (actionUrl) {
                 try {
                     const u = new URL(actionUrl, siteOrigin);
-                    target = (u.origin === siteOrigin) ? (u.pathname + u.search) : '/';
+                    target = (u.origin === siteOrigin) ? u.href : currentUrl;
                 } catch {
-                    target = '/';
+                    target = currentUrl;
                 }
-            }
-            // Edge cache buster for root submissions
-            if (target === '/') {
-                target = '/?lg=1';
             }
 
             // Build FormData from visible form ensuring form-name present and matching form's name
@@ -215,16 +214,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 formData.set('form-name', formName);
             }
 
-            // Defensive: ensure visible fields are included (names may differ)
-            // We will append canonical names in addition to existing ones so Netlify stores values clearly
+            // Use the actual field names from the visible form, not mapped names
             const fullNameVal = (nameEl && nameEl.value) || '';
             const emailVal = (emailEl && emailEl.value) || '';
             const phoneVal = (phoneEl && phoneEl.value) || '';
             const policyAgreeVal = (consentEl && consentEl.checked) ? 'on' : '';
-            formData.set('fullName', fullNameVal);
+            
+            // Keep original field names to match visible form
+            formData.set('name', fullNameVal);
             formData.set('email', emailVal);
             formData.set('phone', phoneVal);
-            formData.set('policyAgree', policyAgreeVal);
+            formData.set('consent', policyAgreeVal);
 
             // Encode to application/x-www-form-urlencoded
             const encoded = new URLSearchParams();
@@ -327,18 +327,6 @@ document.addEventListener('DOMContentLoaded', function() {
             videoCoverWrapper.style.opacity = '1';
             videoCoverWrapper.style.transform = 'translateY(0)';
         }
-    }
-
-    // Utility for adding/updating hidden inputs before Netlify submit
-    function ensureHiddenField(form, name, value) {
-        let el = form.querySelector(`input[name="${name}"]`);
-        if (!el) {
-            el = document.createElement('input');
-            el.type = 'hidden';
-            el.name = name;
-            form.appendChild(el);
-        }
-        el.value = value || '';
     }
 
     // Utility for adding/updating hidden inputs before Netlify submit
